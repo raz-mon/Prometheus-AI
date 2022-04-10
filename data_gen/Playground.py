@@ -20,10 +20,17 @@ import matplotlib.pyplot as plt
 # Todo: Find some data-series that are continuous as can be, and write them down, so can talk to Ilya about which we
 #  actually want.
 
+# Todo: Automate the code so it will perform the process performed on the first query-result to all query-results.
+
+# Todo: Add visualization options as proposed in
+#  https://github.com/aicoe-aiops/time-series/blob/master/notebooks/ts-2-visualization.ipynb.
+
+# Todo: Should probably add resampling. See link above for nice resampling scheme and implementations (quite amazing).
+
 than = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
 
-dat = than.get_metric_range_data('NooBaa_BGWorkers_nodejs_external_memory_bytes',
-                                 label_config={'cluster': 'moc/smaug'},
+dat = than.get_metric_range_data('node_memory_Active_bytes',
+                                 # label_config={'cluster': 'moc/smaug'},
                                  start_time=parse_datetime("50h"),
                                  end_time=parse_datetime("now")
                                  )
@@ -36,16 +43,16 @@ print(dat)
 print(dat[0])
 print((dat[0])['values'])
 
-metric1 = dat[0]
+metric1 = dat[0]                        # This is only the first metric!!! Out of many!
 x0 = metric1['values'][0][0]
 print(x0)
-xs = [(x[0]-x0)/60 for x in metric1['values']]
+xs = [(x[0]-x0) for x in metric1['values']]
 ys = [int(x[1]) for x in metric1['values']]
 
 print(xs)
 print(ys)
 plt.ylabel('value')
-plt.xlabel('time[min]')
+plt.xlabel('time[s]')
 plt.plot(xs, ys)
 # plt.savefig('data/test1/9.png')
 plt.show()
