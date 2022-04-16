@@ -1,13 +1,13 @@
 from prometheus_api_client import PrometheusConnect, MetricRangeDataFrame
 from prometheus_api_client.utils import parse_datetime
 import pandas as pd
-from prometheus_api_client import PrometheusApiClientException
-from datetime import timedelta
 from old.config import OPERATE_FIRST_TOKEN, THANOS_URL
 from old.thanos_api_client import ThanosConnect
+import matplotlib.pyplot as plt
+from prometheus_api_client import PrometheusApiClientException
+from datetime import timedelta
 import datetime
 # from old.preprocess_thanos import export_to_csv, show_graph
-import matplotlib.pyplot as plt
 
 
 # Todo: Write a wrapper function to 'get_metric_range_data' that also gets a file type to save the data in (.csv,
@@ -44,9 +44,10 @@ print(dat[0])
 print((dat[0])['values'])
 
 metric1 = dat[0]                        # This is only the first metric!!! Out of many!
-x0 = metric1['values'][0][0]
-print(x0)
-xs = [(x[0]-x0) for x in metric1['values']]
+# x0 = metric1['values'][0][0]
+# print(x0)
+# xs = [(x[0]-x0) for x in metric1['values']]
+xs = [(x[0]) for x in metric1['values']]
 ys = [int(x[1]) for x in metric1['values']]
 
 print(xs)
