@@ -9,7 +9,7 @@ class ThanosConnect(PrometheusConnect):
                          headers={"Authorization": f"Bearer {op_token}"},
                          disable_ssl=False)
 
-    def get_data(self, metric_name, start_time, end_time, label_config=None, path=None, file_type='.csv',
+    def get_data(self, metric_name, start_time, end_time, label_config=None, path=None, file_type='csv',
                  show_fig=False):
         """
         Get data from Prometheus, according to the following parameters:
@@ -22,6 +22,7 @@ class ThanosConnect(PrometheusConnect):
         :param show_fig: Show the data plotted (boolean).
         :return: The return value of get_metric_range_data (from Prometheus API).
         """
+        # Todo: Add option to visualize the data with go (plotly.graph_objects).
         dat = self.get_metric_range_data(metric_name,
                                          label_config=label_config,
                                          start_time=start_time,
@@ -54,12 +55,19 @@ def save_data(data, metric_name, label_config, i, file_type='csv'):
     :return: True on success, False otherwise.
     """
     """ Save the data to the directory /metric_name/label_config_i.file_type"""
-    # Todo: Save the data to the directory /metric_name/label_config_i.file_type.
     df = MetricRangeDataFrame(data)
-    df.to_csv(f'{metric_name}_{str(label_config)}_{i}.{file_type}')
+
+    # Todo: clean metric name from ':', it's not good in a path.
+    while (metric_name.find(':')) >= 0:
+        ind = metric_name.find(':')
+        metric_name = metric_name[0:ind] + '_' + metric_name[ind + 1:len(metric_name)]
+
+    df.to_csv(f'temp_data/{metric_name}_{str(label_config)}_{i}.{file_type}')
 
     df_with_dates = MetricRangeDataFrame(data)
     df_with_dates.index = pd.to_datetime(df_with_dates.index, unit="s", utc=True)
+    df_with_dates.to_csv(f'temp_data/dates/{metric_name}_{str(label_config)}_dates_{i}.{file_type}')
+
 
 
 
@@ -86,8 +94,6 @@ def plot_data(dat, metric_name, label_config=None, path=None):
         # Conversion to real date-time:
         # m1_df = MetricRangeDataFrame(data[i])
         # m1_df.index = pd.to_datetime(m1_df.index, unit="s", utc=True)
-
-
 
 
 

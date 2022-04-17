@@ -1,7 +1,7 @@
 from prometheus_api_client import PrometheusConnect, MetricRangeDataFrame
 from prometheus_api_client.utils import parse_datetime
 import pandas as pd
-from old.config import OPERATE_FIRST_TOKEN, THANOS_URL
+from main import OPERATE_FIRST_TOKEN, THANOS_URL
 from old.thanos_api_client import ThanosConnect
 import matplotlib.pyplot as plt
 from prometheus_api_client import PrometheusApiClientException
