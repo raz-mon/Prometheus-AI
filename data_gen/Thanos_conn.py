@@ -61,11 +61,11 @@ def save_data(data, metric_name, label_config, i, file_type='csv'):
 
     metric_name = leg(metric_name)
 
-    df.to_csv(f'../data/{metric_name}_{str(label_config)}_{i}.{file_type}')
+    df.to_csv(f'../data/csv/{metric_name}_{str(label_config)}_{i}.{file_type}')
 
     df_with_dates = MetricRangeDataFrame(data)
     df_with_dates.index = pd.to_datetime(df_with_dates.index, unit="s", utc=True)
-    df_with_dates.to_csv(f'../data/dated/{metric_name}_{str(label_config)}_dates_{i}.{file_type}')
+    df_with_dates.to_csv(f'../data/csv/dated/{metric_name}_{str(label_config)}_dates_{i}.{file_type}')
 
 
 
