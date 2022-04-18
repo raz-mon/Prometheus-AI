@@ -59,16 +59,13 @@ def save_data(data, metric_name, label_config, i, file_type='csv'):
     """ Save the data to the directory /metric_name/label_config_i.file_type"""
     df = MetricRangeDataFrame(data)
 
-    # Todo: clean metric name from ':', it's not good in a path.
-    while (metric_name.find(':')) >= 0:
-        ind = metric_name.find(':')
-        metric_name = metric_name[0:ind] + '_' + metric_name[ind + 1:len(metric_name)]
+    metric_name = leg(metric_name)
 
-    df.to_csv(f'temp_data/{metric_name}_{str(label_config)}_{i}.{file_type}')
+    df.to_csv(f'../data/{metric_name}_{str(label_config)}_{i}.{file_type}')
 
     df_with_dates = MetricRangeDataFrame(data)
     df_with_dates.index = pd.to_datetime(df_with_dates.index, unit="s", utc=True)
-    df_with_dates.to_csv(f'temp_data/dates/{metric_name}_{str(label_config)}_dates_{i}.{file_type}')
+    df_with_dates.to_csv(f'../data/dated/{metric_name}_{str(label_config)}_dates_{i}.{file_type}')
 
 
 
@@ -98,7 +95,10 @@ def plot_data(dat, metric_name, label_config=None, path=None):
         # m1_df.index = pd.to_datetime(m1_df.index, unit="s", utc=True)
 
 
-
+def leg(s : str):
+    while (s.find(':')) >= 0:
+        ind = s.find(':')
+        s = s[0:ind] + '_' + s[ind + 1:len(s)]
 
 
 
