@@ -1,6 +1,8 @@
 from prometheus_api_client import PrometheusConnect, MetricRangeDataFrame
 import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 
 
 class ThanosConnect(PrometheusConnect):
