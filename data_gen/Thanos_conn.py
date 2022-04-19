@@ -95,10 +95,13 @@ def plot_data(dat, metric_name, label_config=None, path=None):
         # m1_df.index = pd.to_datetime(m1_df.index, unit="s", utc=True)
 
 
-def leg(s : str):
-    while (s.find(':')) >= 0:
-        ind = s.find(':')
-        s = s[0:ind] + '_' + s[ind + 1:len(s)]
+def leg(s: str):
+    ret = s
+    while (ret.find(':')) >= 0:
+        ind = ret.find(':')
+        ret = ret[0:ind] + '_' + ret[ind + 1:len(ret)]
+    return ret
+
 
 
 
