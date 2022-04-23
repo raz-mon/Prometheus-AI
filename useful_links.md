@@ -21,14 +21,7 @@
 7. **[Forecasting: Principles and Practice](https://otexts.com/fpp2/)**
 
 
-
-
-
-
-
-
-
-
-
-
 </center>
+
+
+
