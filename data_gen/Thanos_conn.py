@@ -66,7 +66,7 @@ class ThanosConnect(PrometheusConnect):
 
 def save_data(data, data_path_seconds, data_path_dates, label_config, i, file_type='csv'):
     """
-    Save the data received.
+    Save the received data.
     :param data: The data to save (one of the data-series received from the request).
     :param data_path_seconds: Path for saving data with seconds.
     :param data_path_dates: Path for saving data with dates.
@@ -129,10 +129,10 @@ def plot_data(show, dat, metric_name, label_config=None, path=None):
 def leg(s: str):
     """
     Remove all appearances of ':' in string s, so it can be inserted to the name of the file we save.
-    :param s: String to re
-    :type s:
-    :return:
-    :rtype:
+    :param s: String to manipulated, in order for it to be safely part of a path of a saved file.
+    :type s: str.
+    :return: The manipulated safe-to-save string.
+    :rtype: str.
     """
     ret = s
     while (ret.find(':')) >= 0:
@@ -142,6 +142,11 @@ def leg(s: str):
 
 
 def current_time_for_file():
+    """
+    Returns the current time and date, in a fashion that can be inserted to a path of a saved file.
+    :return: Current date and time, in legal-to-save fashion.
+    :rtype: str.
+    """
     current_date_time_str = str(parse_datetime("now"))
     date_time_for_file = current_date_time_str[:10] + '_' + current_date_time_str[11:13] + \
                          '-' + current_date_time_str[14:16] + '-' + current_date_time_str[17:19]
