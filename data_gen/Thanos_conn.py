@@ -1,5 +1,8 @@
+import traceback
+
 from prometheus_api_client import PrometheusConnect, MetricRangeDataFrame
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from prometheus_api_client.utils import parse_datetime
 import os
@@ -55,8 +58,13 @@ class ThanosConnect(PrometheusConnect):
         os.mkdir(data_path_dates)
         os.mkdir(data_path_seconds)
 
+        problem_indexes = []            # Save the indexes of the files with problems.
         for i in range(len(dat)):
-            save_data(dat[i], data_path_seconds, data_path_dates, str(label_config), i, file_type)
+            save_data(dat[i], data_path_seconds, data_path_dates, str(label_config), i, file_type, problem_indexes)
+        # Save the indexes of the files with problems (mostly some size issue).
+        df = pd.DataFrame(np.array(problem_indexes))
+        df.to_csv(f'{data_path_seconds}/problem_indexes.{file_type}')
+        df.to_csv(f'{data_path_dates}/problem_indexes.{file_type}')
 
         # Show and save the figures of the data, according to show_fig, path (see specification).
         plot_data(show_fig, dat, metric_name, label_config, path)
@@ -64,7 +72,7 @@ class ThanosConnect(PrometheusConnect):
         return dat
 
 
-def save_data(data, data_path_seconds, data_path_dates, label_config, i, file_type='csv'):
+def save_data(data, data_path_seconds, data_path_dates, label_config, i, file_type='csv', problem_indexes=[]):
     """
     Save the received data.
     :param data: The data to save (one of the data-series received from the request).
@@ -81,11 +89,17 @@ def save_data(data, data_path_seconds, data_path_dates, label_config, i, file_ty
     d2 = {'metric data': [f'{item[0]}: {item[1]}' for item in data['metric'].items()] +
                          ['' for i in range(len(data['values']) - len(data['metric'].items()))]}
     d1.update(d2)
-    pd.DataFrame(d1).to_csv(f'{data_path_seconds}/{i}.{file_type}')
-    # Save a .csv file with dates instead of integers.
-    dates_df = pd.DataFrame(d1)
-    dates_df['time'] = pd.to_datetime(dates_df['time'], unit='s', utc=True)
-    dates_df.to_csv(f'{data_path_dates}/{i}.{file_type}')
+    try:
+        pd.DataFrame(d1).to_csv(f'{data_path_seconds}/{i}.{file_type}')
+        # Save a .csv file with dates instead of integers.
+        dates_df = pd.DataFrame(d1)
+        dates_df['time'] = pd.to_datetime(dates_df['time'], unit='s', utc=True)
+        dates_df.to_csv(f'{data_path_dates}/{i}.{file_type}')
+    except:
+        print(f'problem occured with data{i}.')
+        problem_indexes += [i]
+        # traceback.print_exc()
+
 
 
 def plot_data(show, dat, metric_name, label_config=None, path=None):
@@ -106,20 +120,21 @@ def plot_data(show, dat, metric_name, label_config=None, path=None):
         os.mkdir(path)
 
     # Plot data, and save all figures if path != None.
-    for i in range(len(dat)):
-        data = dat[i]
-        x0 = data['values'][0][0]    # Start time (to normalize others)
-        xs = [(x[0] - x0) for x in data['values']]
-        ys = [float(x[1]) for x in data['values']]
-        plt.title(metric_name)
-        plt.ylabel('value')
-        plt.xlabel('time[s]')
-        plt.plot(xs, ys)
-        if not (path is None):
-            plt.savefig(path + f'/{i}.png')
-    # if show=True -> Show all figures after creating them.
-    if show:
-        plt.show()
+    if show or (path is not None):
+        for i in range(len(dat)):
+            data = dat[i]
+            x0 = data['values'][0][0]    # Start time (to normalize others)
+            xs = [(x[0] - x0) for x in data['values']]
+            ys = [float(x[1]) for x in data['values']]
+            plt.title(metric_name)
+            plt.ylabel('value')
+            plt.xlabel('time[s]')
+            plt.plot(xs, ys)
+            if not (path is None):
+                plt.savefig(path + f'/{i}.png')
+        # if show=True -> Show all figures after creating them.
+        if show:
+            plt.show()
 
         # Conversion to real date-time:
         # m1_df = MetricRangeDataFrame(data[i])
