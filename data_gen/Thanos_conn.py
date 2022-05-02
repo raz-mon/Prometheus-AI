@@ -16,10 +16,12 @@ class ThanosConnect(PrometheusConnect):
                          headers={"Authorization": f"Bearer {op_token}"},
                          disable_ssl=False)
 
-    def get_data(self, metric_name, start_time, end_time, date_time_for_file, label_config=None, path=None, file_type='csv',
+    def get_data(self, metric_name, start_time, end_time, date_time_for_file, time_back, label_config=None, path=None, file_type='csv',
                  show_fig=False):
         """
         Get data from Prometheus, according to the following parameters:
+        :param time_back: How much time back from the current time is the request (query).
+        :type time_back: str.
         :param date_time_for_file: Date and time of query - ready to be inserted to file-name (i.e., no ':' inside).
         :type date_time_for_file: str.
         :param metric_name: Metric name.
@@ -46,21 +48,22 @@ class ThanosConnect(PrometheusConnect):
                                          # Other optional ways:
                                          # start_time= (datetime.now() - datetime.timedelta(hours=8)),
                                          # end_time=datetime.now()
-        print(f'Got {len(dat)} results.')
+        print(f'Got {len(dat)} results for metric {metric_name}.')
 
         # Save data (Make directory of metric data if does not exist, and save each result received by its file name).
         metric_name_leg = leg(metric_name)
-        current_date_time_str = str(parse_datetime("now"))
+        # current_date_time_str = str(parse_datetime("now"))
         # date_time_for_file = current_date_time_str[:10] + '_' + current_date_time_str[11:13] + \
         #                      '-' + current_date_time_str[14:16] + '-' + current_date_time_str[17:19]
-        data_path_seconds = f"../data/csv/seconds/{metric_name_leg}_{date_time_for_file}"
-        data_path_dates = f'../data/csv/dated/{metric_name_leg}_{date_time_for_file}'
+        data_path_seconds = f"../data/csv/seconds/{metric_name_leg}_{time_back}_{date_time_for_file}"
+        data_path_dates = f'../data/csv/dated/{metric_name_leg}_{time_back}_{date_time_for_file}'
         os.mkdir(data_path_dates)
         os.mkdir(data_path_seconds)
 
-        problem_indexes = []            # Save the indexes of the files with problems.
+        problem_indexes = []            # list for the indexes of the files with problems.
         for i in range(len(dat)):
             save_data(dat[i], data_path_seconds, data_path_dates, str(label_config), i, file_type, problem_indexes)
+
         # Save the indexes of the files with problems (mostly some size issue).
         df = pd.DataFrame(np.array(problem_indexes))
         df.to_csv(f'{data_path_seconds}/problem_indexes.{file_type}')

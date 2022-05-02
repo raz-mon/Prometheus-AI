@@ -4,25 +4,50 @@ import numpy as np
 import pandas as pd
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~fyf0kwJxEVe73PbB_jcsrKnNK7gzvrxb7g3YVN6tsBY"
+OPERATE_FIRST_TOKEN = "sha256~_kPxrGg9mf_XngBDEyf-Z7K19Ha8fnfhtTi1Zui8INA"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
 # Run a simple request, for fetching a data-series, plotting it and saving it in data/metric/label_conf.csv
 conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
 # Now get some data, and see that you can save\show it nicely. --> Work on.
+date_time_for_file = current_time_for_file()
+time_back = "24h"
 
 metric_name = 'pod:container_memory_usage_bytes:sum'
-# metric_name = 'pod:container_cpu_usage:sum'
-
-date_time_for_file = current_time_for_file()
 data = conn.get_data(metric_name,
-                     start_time=parse_datetime("2d"),
+                     start_time=parse_datetime(time_back),
                      end_time=parse_datetime("now"),
                      date_time_for_file=date_time_for_file,
-                     # label_config= ,
-                     # path=f'../data/png/{leg(metric_name)}_{date_time_for_file}',
+                     time_back=time_back,
+                     # label_config= {'pod': },
+                     # path=f'../data/png/{leg(metric_name)}_{time_back}_{date_time_for_file}',
                      show_fig=False
                      )
+print(f'succeeded to download memory results, moving on to cpu...')
+
+
+metric_name = 'pod:container_cpu_usage:sum'
+
+data2 = conn.get_data(metric_name,
+                      start_time=parse_datetime(time_back),
+                      end_time=parse_datetime("now"),
+                      date_time_for_file=date_time_for_file,
+                      time_back=time_back,
+                      # label_config= {'pod': },
+                      # path=f'../data/png/{leg(metric_name)}_{time_back}_{date_time_for_file}',
+                      show_fig=False
+                      )
+
+
+
+
+
+
+
+
+
+
+
 
 
 """
