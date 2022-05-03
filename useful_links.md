@@ -6,10 +6,10 @@
 *Add papers and theoretical material.*
 
 ## <ins>Notebooks</ins>
-1. [Fetching metrics data](../notebooks/ts-1-fetching-metrics.ipynb)
-2. [Manipulating and visualizing metrics data](../notebooks/ts-2-visualization.ipynb)
-3. [Concepts](../notebooks/ts-3-concepts.ipynb)
-4. [Forecasting](../notebooks/ts-4-forecasting.ipynb)
+1. [Fetching metrics data](https://github.com/aicoe-aiops/time-series/blob/master/notebooks/ts-1-fetching-metrics.ipynb)
+2. [Manipulating and visualizing metrics data](https://github.com/aicoe-aiops/time-series/blob/master/notebooks/ts-2-visualization.ipynb)
+3. [Concepts](https://github.com/aicoe-aiops/time-series/blob/master/notebooks/ts-3-concepts.ipynb)
+4. [Forecasting](https://github.com/aicoe-aiops/time-series/blob/master/notebooks/ts-4-forecasting.ipynb)
 
 ## <ins>Time series data manipulation and visualization</ins>
 1. **[pandas library.](https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html)**
