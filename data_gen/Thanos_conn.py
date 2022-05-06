@@ -55,14 +55,17 @@ class ThanosConnect(PrometheusConnect):
         # current_date_time_str = str(parse_datetime("now"))
         # date_time_for_file = current_date_time_str[:10] + '_' + current_date_time_str[11:13] + \
         #                      '-' + current_date_time_str[14:16] + '-' + current_date_time_str[17:19]
-        data_path_seconds = f"../data/csv/seconds/{metric_name_leg}_{time_back}_{date_time_for_file}"
-        data_path_dates = f'../data/csv/dated/{metric_name_leg}_{time_back}_{date_time_for_file}'
+        data_path_seconds = f"../data/csv/seconds/{metric_name_leg}_{date_time_for_file}_{time_back}"
+        data_path_dates = f'../data/csv/dated/{metric_name_leg}_{date_time_for_file}_{time_back}'
         os.mkdir(data_path_dates)
         os.mkdir(data_path_seconds)
 
         problem_indexes = []            # list for the indexes of the files with problems.
         for i in range(len(dat)):
-            save_data(dat[i], data_path_seconds, data_path_dates, str(label_config), i, file_type, problem_indexes)
+            if good_result(dat[i]['metric']['pod']):
+                save_data(dat[i], data_path_seconds, data_path_dates, str(label_config), i, file_type, problem_indexes)
+            else:
+                print(f"bad result: {dat[i]['metric']['pod']}")
 
         # Save the indexes of the files with problems (mostly some size issue).
         df = pd.DataFrame(np.array(problem_indexes))
@@ -170,6 +173,17 @@ def current_time_for_file():
                          '-' + current_date_time_str[14:16] + '-' + current_date_time_str[17:19]
     return date_time_for_file
 
+
+def good_result(pod_name):
+    # Todo: Add other Kubernetes-internal pods.
+    bad_result_pod_names = ['apiserver', 'cluster-manager', 'etcd', 'coredns']
+    # If one of the components of 'bad_result_pod_names' appears as the beginning of the pod name -> Return false.
+    # Otherwise return true;
+    for p_name in bad_result_pod_names:
+        if len(pod_name) >= len(p_name):
+            if pod_name[0:len(p_name)] == pod_name:
+                return False
+    return True
 
 
 
