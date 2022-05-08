@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~9tK1UloMo2yTmBfRJUVd0fpqq54nMhXJy20OP-cGP6U"
+OPERATE_FIRST_TOKEN = "sha256~kJb5vHROM1I0tkdmZFbQA8HEKCz6E9-84f9GA8j0j5c"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
 # Run a simple request, for fetching a data-series, plotting it and saving it in data/metric/label_conf.csv
