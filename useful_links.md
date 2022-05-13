@@ -20,6 +20,10 @@
 6. **[An overview of time series forecasting models](https://towardsdatascience.com/an-overview-of-time-series-forecasting-models-a2fa7a358fcb)**
 7. **[Forecasting: Principles and Practice](https://otexts.com/fpp2/)**
 
+  
+## <ins>Jupyter Hub</ins>
+1. **[Jupyterhub](https://jupyterhub-opf-jupyterhub.apps.smaug.na.operate-first.cloud/hub/spawn-pending/raz-mon)
+
 
 </center>
 
