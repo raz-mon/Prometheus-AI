@@ -24,6 +24,8 @@
 ## <ins>Jupyter Hub</ins>
 1. **[Jupyterhub](https://jupyterhub-opf-jupyterhub.apps.smaug.na.operate-first.cloud/hub/spawn-pending/raz-mon)**
 
+## <ins>Forecasting algorithms & Implementations</ins>
+1. **[DeepAR example](https://github.com/zhykoties/TimeSeries)**
 
 </center>
 
