@@ -1,20 +1,18 @@
 from prometheus_api_client.utils import parse_datetime
 from Thanos_conn import ThanosConnect, leg, current_time_for_file, good_result
-import numpy as np
-import pandas as pd
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~jrKn3bjXy5pa-R3wjraS81zJBHFoe9aFKAaj7wTX5Kc"
+OPERATE_FIRST_TOKEN = "sha256~TGBN40tJdYBbYCRW0eHgGUyq-q6DaTQQISHHVWRhinA"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
-# Run a simple request, for fetching a data-series, plotting it and saving it in data/metric/label_conf.csv
+# Initialize connection Object.
 conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
 
-# Now get some data, and see that you can save\show it nicely. --> Work on.
-date_time_for_file = current_time_for_file()
-time_back = "28h"
+date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
 
+time_back = "28h"                                           # How much time back does the query go.
 
+# Memory query
 metric_name = 'pod:container_memory_usage_bytes:sum'
 data = conn.get_data(metric_name,
                      start_time=parse_datetime(time_back),
@@ -25,10 +23,12 @@ data = conn.get_data(metric_name,
                      # path=f'../data/png/{leg(metric_name)}_{time_back}_{date_time_for_file}',
                      show_fig=False
                      )
-print(f'succeeded to download memory results, moving on to cpu...')
 
+print(f'\n\n\n\n---------------------------------------------------------------------------------\n\n\n\n'
+      f'Succeeded to download memory results, moving on to cpu...\n\n\n\n')
+
+# Cpu-usage query
 metric_name = 'pod:container_cpu_usage:sum'
-
 data2 = conn.get_data(metric_name,
                       start_time=parse_datetime(time_back),
                       end_time=parse_datetime("now"),
@@ -38,6 +38,23 @@ data2 = conn.get_data(metric_name,
                       # path=f'../data/png/{leg(metric_name)}_{time_back}_{date_time_for_file}',
                       show_fig=False
                       )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -61,11 +61,14 @@ class ThanosConnect(PrometheusConnect):
         os.mkdir(data_path_seconds)
 
         problem_indexes = []            # list for the indexes of the files with problems.
+        filtered_out = []
         for i in range(len(dat)):
             if good_result(dat[i]['metric']['pod']):
                 save_data(dat[i], data_path_seconds, data_path_dates, str(label_config), i, file_type, problem_indexes)
             else:
-                print(f"Filtering out result: {dat[i]['metric']['pod']}")
+                filtered_out += [i]
+                # print(f"Filtering out result: {dat[i]['metric']['pod']}")
+        print(f'Filtered out {len(filtered_out)} results, out of the {len(dat)} received (Kubernetes-internal pod-data).')
 
         # Save the indexes of the files with problems (mostly some size issue).
         df = pd.DataFrame(np.array(problem_indexes))
@@ -102,7 +105,7 @@ def save_data(data, data_path_seconds, data_path_dates, label_config, i, file_ty
         dates_df['time'] = pd.to_datetime(dates_df['time'], unit='s', utc=True)
         dates_df.to_csv(f'{data_path_dates}/{i}.{file_type}')
     except:
-        print(f'problem occured with data{i}.')
+        # print(f'problem occured with data{i}.')
         problem_indexes += [i]
         # traceback.print_exc()
 
