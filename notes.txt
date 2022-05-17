@@ -1,0 +1,24 @@
+- Maybe move to .pkl format when aggregating -> More compact storage.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

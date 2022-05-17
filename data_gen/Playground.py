@@ -1,37 +1,25 @@
-from prometheus_api_client import PrometheusConnect, MetricRangeDataFrame
-from prometheus_api_client.utils import parse_datetime
+import numpy as np
 import pandas as pd
 from main import OPERATE_FIRST_TOKEN, THANOS_URL
-from old.thanos_api_client import ThanosConnect
+from Thanos_conn import ThanosConnect
 import matplotlib.pyplot as plt
-from prometheus_api_client import PrometheusApiClientException
-from datetime import timedelta
-import datetime
-# from old.preprocess_thanos import export_to_csv, show_graph
-
-
-# Todo: Find some data-series that are continuous as can be, and write them down, so can talk to Ilya about which we
-#  actually want.
-
-# Todo: Add visualization options as proposed in
-#  https://github.com/aicoe-aiops/time-series/blob/master/notebooks/ts-2-visualization.ipynb.
-
-# Todo: Should probably add resampling. See link above for nice resampling scheme and implementations (quite amazing).
-
-than = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
-
-dat = than.get_metric_range_data('node_memory_Active_bytes',
-                                 # label_config={'cluster': 'moc/smaug'},
-                                 start_time=parse_datetime("50h"),
-                                 end_time=parse_datetime("now")
-                                 )
-                                 # Other optional ways:
-                                 # start_time= (datetime.now() - datetime.timedelta(hours=8)),
-                                 # end_time=datetime.now()
+import plotly.graph_objects as go
+from prometheus_api_client.utils import parse_datetime
 
 
 
 
+
+# Initializing a connection, Getting memory-usage-date.
+
+# than = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
+#
+# dat = than.get_metric_range_data('pod:container_memory_usage_bytes:sum',
+#                                  start_time=parse_datetime("24h"),
+#                                  end_time=parse_datetime("now")
+#                                  )
+#
+# print(f'got {len(dat)} results.\n dat: \n{dat}')
 
 
 

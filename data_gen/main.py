@@ -2,45 +2,48 @@ from prometheus_api_client.utils import parse_datetime
 from Thanos_conn import ThanosConnect, leg, current_time_for_file, good_result
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~TGBN40tJdYBbYCRW0eHgGUyq-q6DaTQQISHHVWRhinA"
+OPERATE_FIRST_TOKEN = "sha256~As2-vbezo8s8e3Vj8_uGCpAg7DQgRQLjVjtBRf0zhuQ"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
-# Initialize connection Object.
-conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
 
-date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
+def main():
+    # Initialize connection Object.
+    conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
 
-time_back = "28h"                                           # How much time back does the query go.
+    date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
 
-# Memory query
-metric_name = 'pod:container_memory_usage_bytes:sum'
-data = conn.get_data(metric_name,
-                     start_time=parse_datetime(time_back),
-                     end_time=parse_datetime("now"),
-                     date_time_for_file=date_time_for_file,
-                     time_back=time_back,
-                     # label_config= {'pod': },
-                     # path=f'../data/png/{leg(metric_name)}_{time_back}_{date_time_for_file}',
-                     show_fig=False
-                     )
+    time_back = "25h"                                           # How much time back does the query go.
 
-print(f'\n\n\n\n---------------------------------------------------------------------------------\n\n\n\n'
-      f'Succeeded to download memory results, moving on to cpu...\n\n\n\n')
+    # Memory query
+    metric_name = 'pod:container_memory_usage_bytes:sum'
+    data = conn.get_data(metric_name,
+                         start_time=parse_datetime(time_back),
+                         end_time=parse_datetime("now"),
+                         date_time_for_file=date_time_for_file,
+                         time_back=time_back,
+                         # label_config= {'pod': },
+                         # path=f'../data/png/{leg(metric_name)}_{time_back}_{date_time_for_file}',
+                         show_fig=False
+                         )
 
-# Cpu-usage query
-metric_name = 'pod:container_cpu_usage:sum'
-data2 = conn.get_data(metric_name,
-                      start_time=parse_datetime(time_back),
-                      end_time=parse_datetime("now"),
-                      date_time_for_file=date_time_for_file,
-                      time_back=time_back,
-                      # label_config= {'pod': },
-                      # path=f'../data/png/{leg(metric_name)}_{time_back}_{date_time_for_file}',
-                      show_fig=False
-                      )
+    print(f'\n\n---------------------------------------------------------------------------------\n\n'
+          f'Succeeded to download memory results, moving on to cpu...\n\n\n\n')
+
+    # Cpu-usage query
+    metric_name = 'pod:container_cpu_usage:sum'
+    data2 = conn.get_data(metric_name,
+                          start_time=parse_datetime(time_back),
+                          end_time=parse_datetime("now"),
+                          date_time_for_file=date_time_for_file,
+                          time_back=time_back,
+                          # label_config= {'pod': },
+                          # path=f'../data/png/{leg(metric_name)}_{time_back}_{date_time_for_file}',
+                          show_fig=False
+                          )
 
 
-
+if __name__ == '__main__':
+    main()
 
 
 
