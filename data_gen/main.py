@@ -2,17 +2,16 @@ from prometheus_api_client.utils import parse_datetime
 from Thanos_conn import ThanosConnect, leg, current_time_for_file, good_result
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~As2-vbezo8s8e3Vj8_uGCpAg7DQgRQLjVjtBRf0zhuQ"
+OPERATE_FIRST_TOKEN = "sha256~__Ro9RDSQRE5XeuJ40oFxOzF4--zqPAAhU33P3tWnm0"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
 
 def main():
     # Initialize connection Object.
     conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
-
     date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
+    time_back = "28h"                                           # How much time back does the query go.
 
-    time_back = "25h"                                           # How much time back does the query go.
 
     # Memory query
     metric_name = 'pod:container_memory_usage_bytes:sum'

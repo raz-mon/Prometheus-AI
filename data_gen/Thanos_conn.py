@@ -70,6 +70,7 @@ class ThanosConnect(PrometheusConnect):
                 # print(f"Filtering out result: {dat[i]['metric']['pod']}")
         print(f'Filtered out {len(filtered_out)} results, out of the {len(dat)} received (Kubernetes-internal pod-data).')
         print(f'{len(problem_indexes)} results where not successfuly saved exception raised.')
+        print(f'Total saved results: {len(dat)-len(problem_indexes)-len(filtered_out)}')
 
         # Save the indexes of the files with problems (mostly some size issue).
         df = pd.DataFrame(np.array(problem_indexes))
