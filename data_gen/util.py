@@ -27,6 +27,14 @@ def get_last_ts(df):
     return np.array(df.index)[-1]
 
 
+def get_pod_name(df):
+    return df['metric data'].loc[3][5:]
+
+
+def append_tss(df1, df2):
+    return df1.append(df2[get_last_ts(df1)])
+
+
 legal_pod_names = ['klusterlet', 'cloud-credential-operator'] # And many more.. need to write them all down..
 
 """
@@ -57,6 +65,14 @@ def aggregate_results(f1_path, f2_path):
     df1 = clean_and_date_df(pd.read_csv(f1_path))
     df2 = clean_and_date_df(pd.read_csv(f2_path))
     return df1.append(df2[get_last_ts(df1)])
+
+
+def aggregate_results_df(df1, df2):
+    """Aggregate the results of the two data-frames (.csv files)
+    Returns a new data-frame, that starts with the first data-frame, and is continued by the second data-frame, with no
+    intersection.
+    """
+    return df1.append(df2[get_last_ts(df1):])
 
 
 def pod_name_no_rand(file_path):
@@ -120,5 +136,4 @@ def append_simple_test():
     #     title="Pod memory usage: sum", xaxis_title="Time", yaxis_title="Bytes"
     # )
 
-append_simple_test()
 
