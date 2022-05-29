@@ -1,8 +1,10 @@
 from prometheus_api_client.utils import parse_datetime
 from Thanos_conn import ThanosConnect, leg, current_time_for_file, good_result
+import pandas as pd
+import numpy as np
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~dBXWoEZ2pIjQUYkOkGL2iq5l9E3vSdvIoaawuXHtZs8"
+OPERATE_FIRST_TOKEN = "sha256~daSK4q7v8Pc_kdYJLkiBKV7qeoLuuah0DSzIeLgeY5A"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
 
@@ -10,7 +12,7 @@ def main():
     # Initialize connection Object.
     conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
     date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
-    time_back = "25h"                                           # How much time back does the query go.
+    time_back = "28h"                                           # How much time back does the query go.
 
 
     # Memory query
@@ -25,8 +27,9 @@ def main():
                          show_fig=False
                          )
 
-    print(f'\n\n---------------------------------------------------------------------------------\n\n'
-          f'Succeeded to download memory results, moving on to cpu...\n\n\n\n')
+    print(f'\n---------------------------------------------------------------------------------\n'
+          f'Succeeded to download memory results, moving on to cpu...\n'
+          f'---------------------------------------------------------------------------------\n')
 
     # Cpu-usage query
     metric_name = 'pod:container_cpu_usage:sum'
@@ -61,21 +64,11 @@ if __name__ == '__main__':
 
 
 
-
-
-
-
-
-
-
-
-
 """
 # Check that filtering really occures.
-
-def get_filtered_pod_names():
-    metric_name = 'pod:container_cpu_usage:sum'
-    dat = conn.get_metric_range_data(metric_name,
+def get_filtered_pod_names(metric, filtered):
+    conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
+    dat = conn.get_metric_range_data(metric,
                                      # label_config=label_config,
                                      start_time=parse_datetime("28h"),
                                      end_time=parse_datetime("now"),
@@ -84,38 +77,23 @@ def get_filtered_pod_names():
 
     pods = []
     for res in dat:
-        if good_result(res['metric']['pod']):
+        if good_result(res['metric']['pod']) and filtered:
             pods += [res['metric']['pod']]
-    print(f'len(filtered pods): {len(pods)}')
+    print(f'len(after filtering): {len(pods)}')
     # print(pods)
 
     df = pd.DataFrame(np.array(pods))
-    df.to_csv('pod_names/pod_names_cpu_usage_filtered.csv')
+    if filtered:
+        df.to_csv(f'pod_names/pod_names_{metric[4:-4]}_filtered.csv')
+    else:
+        df.to_csv(f'pod_names/pod_names_{metric[4:-4]}_not-filtered.csv')
 
-get_filtered_pod_names()
 
-def get_pod_names():
-    metric_name = 'pod:container_cpu_usage:sum'
-    dat = conn.get_metric_range_data(metric_name,
-                                     # label_config=label_config,
-                                     start_time=parse_datetime("28h"),
-                                     end_time=parse_datetime("now"),
-                                     )
-    print(f'Got {len(dat)} results.')
-
-    pods = []
-    for res in dat:
-        pods += [res['metric']['pod']]
-    print(f'len(unfiltered pods): {len(pods)}')
-    # print(pods)
-
-    df = pd.DataFrame(np.array(pods))
-    df.to_csv('pod_names/pod_names_cpu_usage_not_filtered.csv')
-
-get_pod_names()
+# get_filtered_pod_names('pod:container_memory_usage_bytes:sum', True)
+# get_filtered_pod_names('pod:container_memory_usage_bytes:sum', False)
+# get_filtered_pod_names('pod:container_cpu_usage:sum', True)
+get_filtered_pod_names('pod:container_cpu_usage:sum', False)
 """
-
-
 
 
 

@@ -1,9 +1,5 @@
-- No efficient and automatic way to aggregate the application data, better than writing them down manually..
-  See util (aggregate results section).
-
 - Maybe move to .pkl format when aggregating -> More compact storage.
 
-- Stopped saving dated data - don't need it!
 
 
 

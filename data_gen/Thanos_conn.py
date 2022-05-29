@@ -68,7 +68,7 @@ class ThanosConnect(PrometheusConnect):
             else:
                 filtered_out += [i]
                 # print(f"Filtering out result: {dat[i]['metric']['pod']}")
-        print(f'Filtered out {len(filtered_out)} results, out of the {len(dat)} received (Kubernetes-internal pod-data).')
+        print(f'Filtered out {len(filtered_out)} results, out of the {len(dat)} received (Kubernetes-internal pods filtered out).')
         print(f'{len(problem_indexes)} results where not successfuly saved exception raised.')
         print(f'Total saved results: {len(dat)-len(problem_indexes)-len(filtered_out)}')
 

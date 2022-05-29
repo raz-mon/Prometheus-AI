@@ -1,22 +1,20 @@
-- Query the two metrics EVERY DAY!
 
-- Write down all of the 'legal' application names in 'legal_pod_names' in util.
 
-- Write a function that aggregates all the application data.
-    - Start with writing one for the new saving format (what isn't in the 'until...' directory).
-    - Then aggregate that data as well.
 
-- Make new directory of data resampled by hours (by mean).
 
-- Implement some forecasting methods.
 
-- Make functions that forecast forward (how many is an argument) for a given time-series.
-    - Arguments:
-        - How many time forward (in hours) - horizon.
-        - What method to use (out of the ones I'll implement).
-        - What else?
 
-- Delete the dated data - no need of it! I'm using only the seconds data anyway - and it is backed up in Dropbox.
+
+
+Todo:
+    - Query the two metrics EVERY DAY!
+    - Write down all of the 'legal' application names in 'legal_pod_names' in util.
+    - Aggregate the resampled data for all applications.
+    - Implement some forecasting methods.
+    - Delete dated data (already have backup for the seconds).
+    - Write pipeline API for the project (This can be really fun - not so little work also..).
+
+
 
 
 

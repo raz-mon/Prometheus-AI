@@ -35,7 +35,102 @@ def append_tss(df1, df2):
     return df1.append(df2[get_last_ts(df1)])
 
 
-legal_pod_names = ['klusterlet', 'cloud-credential-operator'] # And many more.. need to write them all down..
+def get_df(path):
+    df = pd.read_csv(path)
+    df.index = pd.to_datetime(df['time'])
+    df = df['values']
+    return df
+
+
+cpu_legal_pod_names = ['klusterlet',
+                        'cloud-credential-operator',
+                        'opf-external-secrets',
+                        'authentication-operator',
+                        'pod-identity-webhook',
+                        'aws-ebs-csi-driver-controller',
+                        'tuned',
+                        'csi-snapshot-controller',
+                        'console',
+                        'downloads',
+                        'node-resolver',
+                        'node-ca',
+                        'router-default',
+                        'ingress-canary',
+                        'ingress-operator',
+                        'migrator',
+                        'collector',
+                        'certified-operators',
+                        'community-operators',
+                        'marketplace-operator',
+                        'redhat-marketplace',
+                        'alertmanager-main',
+                        'grafana',
+                        'node-exporter',
+                        'telemeter-client',
+                        'thanos-querier',
+                        'multus',
+                        'multus-additional-cni-plugins',
+                        'multus',
+                        'network-metrics-daemon',
+                        'network-operator',
+                        'catalog-operator',
+                        'olm-operator',
+                        'packageserver',
+                        'cert-manager-cainjector'''
+                        'external-secrets-operator-controller-manager',
+                        'service-ca',
+                        'thanos-ruler-user-workload',
+                        'kafka-kafdrop',
+                        'opf-kafka-entity-operator',
+                        'strimzi-cluster-operator-v0.29.0',
+                        'k8s-annotations-exporter',
+                        'amun-api',
+                        'argo-server',
+                        'inspection-test',
+                        'adviser',
+                       ] # And many more.. need to write them all down..
+# Todo: Add more applications (got to adviser at row 169).
+
+memory_legal_pod_names = ['authentication-operator',
+                          'cloud-credential-operator',
+                          'pod-identity-webhook',
+                          'aws-ebs-csi-driver-controller',
+                          'tuned',
+                          'csi-snapshot-controller',
+                          'console',
+                          'downloads',
+                          'console-operator',
+                          'node-resolver',
+                          'node-ca',
+                          'router-default',
+                          'ingress-canary',
+                          'ingress-operator',
+                          'insights-operator',
+                          'revision-pruner',
+                          'migrator',
+                          'collector',
+                          'certified-operators',
+                          'community-operators',
+                          'marketplace-operator',
+                          'redhat-marketplace',
+                          'redhat-operators',
+                          'alertmanager-main',
+                          'grafana',
+                          'node-exporter',
+                          'telemeter-client',
+                          'thanos-querier',
+                          'multus',
+                          'multus-additional-cni-plugins',
+                          'multus-admission-controller',
+                          'network-metrics-daemon',
+                          'network-operator',
+                          'catalog-operator',
+                          'olm-operator',
+                          'packageserver',
+                          'cert-manager-cainjector',
+                          ]
+# Todo: Continue adding to list (got to line 403 in 'pod_names_container_memory_usage_bytes_filtered').
+
 
 """
 General flow:
@@ -78,7 +173,10 @@ def aggregate_results_df(df1, df2):
 def pod_name_no_rand(file_path):
     df = pd.read_csv(file_path)
     pod_name = df['metric data'].loc[3][5:]
-    for legal_pod_name in legal_pod_names:
+    for legal_pod_name in cpu_legal_pod_names:
+        if legal_pod_name == pod_name[len(legal_pod_name)]:
+            return legal_pod_name
+    for legal_pod_name in memory_legal_pod_names:
         if legal_pod_name == pod_name[len(legal_pod_name)]:
             return legal_pod_name
     print(f'pod name not found!')
