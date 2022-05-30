@@ -48,7 +48,7 @@ class ThanosConnect(PrometheusConnect):
                                          # Other optional ways:
                                          # start_time= (datetime.now() - datetime.timedelta(hours=8)),
                                          # end_time=datetime.now()
-        print(f'Got {len(dat)} results for metric {metric_name}.')
+        print(f'Got {len(dat)} results for metric \'{metric_name}\'.')
 
         # Save data (Make directory of metric data if does not exist, and save each result received by its file name).
         metric_name_leg = leg(metric_name)

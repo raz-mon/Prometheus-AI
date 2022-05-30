@@ -52,9 +52,18 @@ def aggregate_app(path, app_name, metric):
 # for app_name in memory_legal_pod_names:
 #     aggregate_app('../data/csv/seconds', app_name, 'memory_usage')
 
-for app_name in cpu_legal_pod_names:
-    aggregate_app('../data/csv/seconds', app_name, 'memory_usage')
-
+def aggregate_all_pods(metric):
+    """
+    Aggregate all of the results for each pod.
+    :param metric: The metric to aggregate, either 'memory_usage' or 'cpu_usage'.
+    :type metric: str
+    """
+    if metric == 'memory_usage':
+        for app_name in memory_legal_pod_names:
+            aggregate_app('../data/csv/seconds', app_name, 'memory_usage')
+    elif metric == 'cpu_usage':
+        for app_name in cpu_legal_pod_names:
+            aggregate_app('../data/csv/seconds', app_name, 'cpu_usage')
 
 def from_dated_to_timestamp_csv(path):
     """From datetime index to seconds (timestamp - the original form)"""
