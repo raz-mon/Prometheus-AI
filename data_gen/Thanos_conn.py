@@ -56,15 +56,13 @@ class ThanosConnect(PrometheusConnect):
         # date_time_for_file = current_date_time_str[:10] + '_' + current_date_time_str[11:13] + \
         #                      '-' + current_date_time_str[14:16] + '-' + current_date_time_str[17:19]
         data_path_seconds = f"../data/csv/seconds/{metric_name_leg}_{date_time_for_file}_{time_back}"
-        data_path_dates = f'../data/csv/dated/{metric_name_leg}_{date_time_for_file}_{time_back}'
-        os.mkdir(data_path_dates)
         os.mkdir(data_path_seconds)
 
         problem_indexes = []            # list for the indexes of the files with problems.
         filtered_out = []
         for i in range(len(dat)):
             if good_result(dat[i]['metric']['pod']):
-                save_data(dat[i], data_path_seconds, data_path_dates, str(label_config), i, file_type, problem_indexes)
+                save_data(dat[i], data_path_seconds, str(label_config), i, file_type, problem_indexes)
             else:
                 filtered_out += [i]
                 # print(f"Filtering out result: {dat[i]['metric']['pod']}")
@@ -75,7 +73,6 @@ class ThanosConnect(PrometheusConnect):
         # Save the indexes of the files with problems (mostly some size issue).
         df = pd.DataFrame(np.array(problem_indexes))
         df.to_csv(f'{data_path_seconds}/problem_indexes.{file_type}')
-        df.to_csv(f'{data_path_dates}/problem_indexes.{file_type}')
 
         # Show and save the figures of the data, according to show_fig, path (see specification).
         plot_data(show_fig, dat, metric_name, label_config, path)
@@ -83,19 +80,18 @@ class ThanosConnect(PrometheusConnect):
         return dat
 
 
-def save_data(data, data_path_seconds, data_path_dates, label_config, i, file_type='csv', problem_indexes=[]):
+def save_data(data, data_path_seconds, label_config, i, file_type='csv', problem_indexes=[]):
     """
     Save the received data.
     :param data: The data to save (one of the data-series received from the request).
     :param data_path_seconds: Path for saving data with seconds.
-    :param data_path_dates: Path for saving data with dates.
     :param label_config: More details on the metric.
     :param i: The index of this time-series data (in received array).
     :param file_type: Type of file to save the data in (.csv, .xlsx).
     :return: Void.
     """
 
-    # df = MetricRangeDataFrame(data)
+    # TODO: Simplify this (complex for no reason).
     d1 = {'time': [x[0] for x in data['values']], 'values': [x[1] for x in data['values']]}
     d2 = {'metric data': [f'{item[0]}: {item[1]}' for item in data['metric'].items()] +
                          ['' for i in range(len(data['values']) - len(data['metric'].items()))]}
@@ -105,7 +101,6 @@ def save_data(data, data_path_seconds, data_path_dates, label_config, i, file_ty
         # Save a .csv file with dates instead of integers.
         dates_df = pd.DataFrame(d1)
         dates_df['time'] = pd.to_datetime(dates_df['time'], unit='s', utc=True)
-        dates_df.to_csv(f'{data_path_dates}/{i}.{file_type}')
     except:
         # print(f'problem occured with data{i}.')
         problem_indexes += [i]
@@ -146,10 +141,6 @@ def plot_data(show, dat, metric_name, label_config=None, path=None):
         # if show=True -> Show all figures after creating them.
         if show:
             plt.show()
-
-        # Conversion to real date-time:
-        # m1_df = MetricRangeDataFrame(data[i])
-        # m1_df.index = pd.to_datetime(m1_df.index, unit="s", utc=True)
 
 
 def leg(s: str):

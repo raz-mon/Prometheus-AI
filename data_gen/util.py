@@ -44,7 +44,7 @@ def get_df(path):
 
 cpu_legal_pod_names = ['klusterlet',
                         'cloud-credential-operator',
-                        'opf-external-secrets',
+                        'opf    -external-secrets',
                         'authentication-operator',
                         'pod-identity-webhook',
                         'aws-ebs-csi-driver-controller',
