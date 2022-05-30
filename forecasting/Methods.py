@@ -31,41 +31,53 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-"""Visualize time series"""
-metric_df = pd.read_pickle("../data/raw/ts.pkl")
-ts = metric_df["value"].astype(float).resample("min").mean()
-sns.set()
-ts.plot(figsize=(15, 10))
-plt.title("Visualize time series")
-plt.ylabel("Node memory active bytes")
-plt.show()
+def visualize_ts(ts, ylabel, title):
+    """Visualize time series"""
+    sns.set()
+    ts.plot(figsize=(10, 5))
+    plt.title(title)
+    plt.ylabel(ylabel)
+    plt.show()
 
 
-"""Generate some white noise"""
-## Create a wn time series with mean, std, length same as our loaded data
-wn = np.random.normal(loc=ts.mean(), scale=ts.std(), size=len(ts))
-pd.DataFrame(wn).plot(figsize=(15, 10))
-plt.title("Visualize white noise")
-plt.ylabel("value")
-plt.xlabel("time")
-plt.show()
+def white_noise(ts):
+    """Generate some white noise"""
+    ## Create a wn time series with mean, std, length same as our loaded data
+    wn = np.random.normal(loc=ts.mean(), scale=ts.std(), size=len(ts))
+    pd.DataFrame(wn).plot(figsize=(10, 5))
+    plt.title("Visualize white noise")
+    plt.ylabel("value")
+    plt.xlabel("time")
+    plt.show()
 
 
-"""Random walk"""
-## Randomly choose from -1, 0, 1 for the next step
-random_steps = np.random.choice(a=[-1, 0, 1], size=(len(ts), 1))
-rw = np.concatenate([np.zeros((1, 1)), random_steps]).cumsum(0)
-pd.DataFrame(rw).plot(figsize=(15, 10))
-plt.title("Visualize random walk")
-plt.ylabel("value")
-plt.xlabel("time")
-plt.show()
+def random_walk(ts):
+    """Random walk, in the same length as ts"""
+    ## Randomly choose from -1, 0, 1 for the next step
+    random_steps = np.random.choice(a=[-1, 0, 1], size=(len(ts), 1))
+    rw = np.concatenate([np.zeros((1, 1)), random_steps]).cumsum(0)
+    pd.DataFrame(rw).plot(figsize=(10, 5))
+    plt.title("Visualize random walk")
+    plt.ylabel("value")
+    plt.xlabel("time")
+    plt.show()
 
 
+def get_ts(df):
+    ts = df
+    ts.index = pd.to_datetime(ts.index, unit='s', utc=True)
+    return ts['values']
 
-# class Linear(object):
+
+# TODO: Keep implementing more forecasting methods --> Write forecasting API.
+#  Can be really nice to also use some RNNs and LSTMs.
 
 
+df = pd.read_csv('../data/csv/seconds/pod_container_cpu_usage_sum_2022-05-06_09-18-36_28h/0.csv')
+ts = get_ts(df)
+visualize_ts(ts, 'vals', 'ts')
+random_walk(ts)
+white_noise(ts)
 
 
 

@@ -63,6 +63,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import itertools
 import warnings
+# from fbprophet import Prophet
+
 
 warnings.filterwarnings("ignore")
 
@@ -93,11 +95,6 @@ warnings.filterwarnings("ignore")
 
 metric_df = pd.read_pickle("ts.pkl")
 ts = metric_df["value"].astype(float).resample("min").mean()
-
-print(ts)
-ts.to
-
-
 sns.set()
 ts.plot(figsize=(15, 10))
 plt.title("Visualize time series")

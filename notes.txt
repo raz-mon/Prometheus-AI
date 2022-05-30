@@ -1,4 +1,5 @@
-- Maybe move to .pkl format when aggregating -> More compact storage.
+- Should move to .pkl format when aggregating -> More compact storage! (Still easy to handle).
+
 
 
 

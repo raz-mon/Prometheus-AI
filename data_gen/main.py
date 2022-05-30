@@ -14,7 +14,7 @@ def main():
     date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
     time_back = "28h"                                           # How much time back does the query go.
 
-
+    """
     # Memory query
     metric_name = 'pod:container_memory_usage_bytes:sum'
     data = conn.get_data(metric_name,
@@ -30,6 +30,7 @@ def main():
     print(f'\n---------------------------------------------------------------------------------\n'
           f'Succeeded to download memory results, moving on to cpu...\n'
           f'---------------------------------------------------------------------------------\n')
+    """
 
     # Cpu-usage query
     metric_name = 'pod:container_cpu_usage:sum'

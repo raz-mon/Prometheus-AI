@@ -1,18 +1,17 @@
 
 
-
-
-
-
-
-
 Todo:
     - Query the two metrics EVERY DAY!
     - Write down all of the 'legal' application names in 'legal_pod_names' in util.
-    - Aggregate the resampled data for all applications.
     - Implement some forecasting methods.
     - Delete dated data (already have backup for the seconds).
     - Write pipeline API for the project (This can be really fun - not so little work also..).
+
+
+
+
+
+
 
 
 
