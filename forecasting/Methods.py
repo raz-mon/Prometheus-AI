@@ -31,6 +31,12 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+def get_ts(df):
+    ts = df
+    ts.index = pd.to_datetime(ts.index, unit='s', utc=True)
+    return ts['values']
+
+
 def visualize_ts(ts, ylabel, title):
     """Visualize time series"""
     sns.set()
@@ -63,23 +69,184 @@ def random_walk(ts):
     plt.show()
 
 
-def get_ts(df):
-    ts = df
-    ts.index = pd.to_datetime(ts.index, unit='s', utc=True)
-    return ts['values']
+def Dickey_Fuller_test(ts):
+    dft = adfuller(ts)
+    print(
+        f"p value {round(dft[1], 4)}",
+        f"\n Test statistic {round(dft[0], 4)}",
+        f"\n Critical values {dft[4]}",
+    )
 
 
-# TODO: Keep implementing more forecasting methods --> Write forecasting API.
+def seasonality_additive(ts):
+    plt.rc("figure", figsize=(15, 10))
+    sd_add = seasonal_decompose(ts, model="additive", period=30)
+    sd_add.plot()  # Image manipulation doesn't work here.
+    plt.show()
+
+
+def seasonality_multiplicative(ts):
+    plt.rc("figure", figsize=(15, 10))
+    sd_add = seasonal_decompose(ts, model="multiplicative", period=30)
+    sd_add.plot()  # Image manipulation doesn't work here.
+    plt.show()
+
+
+def AC(ts):
+    sgt.plot_acf(ts, lags=50, zero=False)
+    ## We give zero=False since correlation of a time series with itself is always 1
+    plt.rc("figure", figsize=(15, 10))
+    plt.ylabel("Coefficient of correlation")
+    plt.xlabel("Lags")
+    plt.show()
+
+
+def PAC(ts):
+    sgt.plot_pacf(ts, zero=False, method="ols")
+    plt.rc("figure", figsize=(15, 10))
+    plt.ylabel("Coefficient of correlation")
+    plt.xlabel("Lags")
+    plt.show()
+
+
+def Linear_Regression_forecast(ts):
+    train = ts[0: int(len(ts) * 0.8)]
+    test = ts[int(len(ts) * 0.8):]
+    train_time = [i + 1 for i in range(len(train))]
+    test_time = [i + 8065 for i in range(len(test))]
+
+    LinearRegression_train = pd.DataFrame(train)
+    LinearRegression_test = pd.DataFrame(test)
+    LinearRegression_train["time"] = train_time
+    LinearRegression_test["time"] = test_time
+
+    # Plot data (train and test in different colors)
+
+    plt.figure(figsize=(16, 5))
+    plt.plot(LinearRegression_train["values"], label="Train")
+    plt.plot(LinearRegression_test["values"], label="Test")
+    plt.legend(loc="best")
+    plt.xlabel("Time")
+    plt.ylabel("Value")
+    plt.xticks(rotation=90)
+    plt.show()
+
+
+    # Training the algorithm
+    lr = linear_model.LinearRegression()
+    lr.fit(
+        LinearRegression_train[["time"]], LinearRegression_train["values"].values
+    )
+
+    # Intercept
+    print("Intercept :", lr.intercept_)
+    # Coeffiecient of x : Slope
+    print("Coefficient of x :", lr.coef_)
+
+
+def exponential_smoothing_forecast(ts):
+    train = ts[0: int(len(ts) * 0.8)]
+    test = ts[int(len(ts) * 0.8):]
+    train_time = [i + 1 for i in range(len(train))]
+    test_time = [i + 8065 for i in range(len(test))]
+    ses_train = pd.DataFrame(train)
+
+    # Try autofit
+    ses_model = SimpleExpSmoothing(ses_train["values"])
+    ses_model_autofit = ses_model.fit(optimized=True, use_brute=True)
+    print(ses_model_autofit.summary())
+
+
+def exp_smoothing_opt_alpha_forecast(ts):
+    train = ts[0: int(len(ts) * 0.8)]
+    test = ts[int(len(ts) * 0.8):]
+    train_time = [i + 1 for i in range(len(train))]
+    test_time = [i + 8065 for i in range(len(test))]
+    ses_train = pd.DataFrame(train)
+    ses_model = SimpleExpSmoothing(ses_train["values"])
+
+    # Try to optimize the coefficient by finding minimum AIC.
+    min_ses_aic = 99999999
+    for i in np.arange(0.01, 1, 0.01):
+        ses_model_alpha = ses_model.fit(
+            smoothing_level=i, optimized=False, use_brute=False
+        )
+        # You can print to see all the AIC values
+        # print(' SES {} - AIC {} '.format(i,ses_model_alpha.aic))
+        if ses_model_alpha.aic < min_ses_aic:
+            min_ses_aic = ses_model_alpha.aic
+            min_aic_ses_model = ses_model_alpha
+            min_aic_alpha_ses = i
+
+    print("Best Alpha : ", min_aic_alpha_ses)
+    print("Best Model : \n")
+    min_aic_ses_model.summary()
+
+
+def holt_forecast(ts):
+    # since optimization is intensive, we are sampling for this method
+    # ts_holt = metric_df["value"].astype(float).resample("30min").mean()
+    ts_holt = ts
+    train = ts_holt[0: int(len(ts_holt) * 0.8)]
+    test = ts_holt[int(len(ts_holt) * 0.8):]
+    des_train = pd.DataFrame(train)
+
+    # Try out autofit model and see what alpha and beta values are.
+    des_model = Holt(des_train["values"])
+    des_model_autofit = des_model.fit(optimized=True, use_brute=True)
+    print(des_model_autofit.summary())
+
+
+def holt_opt_alpha(ts):
+    ts_holt = ts
+    train = ts_holt[0: int(len(ts_holt) * 0.8)]
+    test = ts_holt[int(len(ts_holt) * 0.8):]
+    des_train = pd.DataFrame(train)
+    des_model = Holt(des_train["values"])
+
+    # Try to optimize the coefficient:
+    min_des_aic = 99999
+    for i in np.arange(0.01, 1, 0.01):
+        for j in np.arange(0.01, 1.01, 0.01):
+            des_model_alpha_beta = des_model.fit(
+                smoothing_level=i,
+                smoothing_slope=j,
+                optimized=False,
+                use_brute=False,
+            )
+            # You can print to see all the AIC values
+            # print(' DES {} - AIC {} '.format(i,des_model_alpha_beta.aic))
+            if des_model_alpha_beta.aic < min_des_aic:
+                min_des_aic = des_model_alpha_beta.aic
+                min_aic_des_model = des_model_alpha_beta
+                min_aic_alpha_des = i
+                min_aic_beta_des = j
+
+    print("Best Alpha : ", min_aic_alpha_des)
+    print("Best Beta : ", min_aic_beta_des)
+    print("Best Model : \n")
+    print(min_aic_des_model.summary())
+
+
+# TODO: Keep implementing more forecasting methods (got to ARMA)--> Write forecasting API.
 #  Can be really nice to also use some RNNs and LSTMs.
 
 
 df = pd.read_csv('../data/csv/seconds/pod_container_cpu_usage_sum_2022-05-06_09-18-36_28h/0.csv')
 ts = get_ts(df)
-visualize_ts(ts, 'vals', 'ts')
-random_walk(ts)
-white_noise(ts)
-
-
+# visualize_ts(ts, 'vals', 'ts')
+# random_walk(ts)
+# white_noise(ts)
+# Dickey_Fuller_test(ts)
+# seasonality_additive(ts)
+# seasonality_multiplicative(ts)
+# AC(ts)
+# PAC(ts)
+# Linear_Regression_forecast(ts)
+# exponential_smoothing_forecast(ts)
+# exp_smoothing_opt_alpha_forecast(ts)
+# holt_forecast(ts)
+# holt_opt_alpha(ts)
 
 
 

@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~daSK4q7v8Pc_kdYJLkiBKV7qeoLuuah0DSzIeLgeY5A"
+OPERATE_FIRST_TOKEN = "sha256~T2Sufo8eZBS4tORjFT0WcQn1I0LPOMH6EaRcRbtOVWQ"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
 
@@ -14,7 +14,7 @@ def main():
     date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
     time_back = "28h"                                           # How much time back does the query go.
 
-    """
+
     # Memory query
     metric_name = 'pod:container_memory_usage_bytes:sum'
     data = conn.get_data(metric_name,
@@ -30,7 +30,7 @@ def main():
     print(f'\n---------------------------------------------------------------------------------\n'
           f'Succeeded to download memory results, moving on to cpu...\n'
           f'---------------------------------------------------------------------------------\n')
-    """
+
 
     # Cpu-usage query
     metric_name = 'pod:container_cpu_usage:sum'
