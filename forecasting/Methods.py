@@ -15,7 +15,9 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.api import SimpleExpSmoothing, Holt
 from statsmodels.tsa.stattools import adfuller
 import statsmodels.graphics.tsaplots as sgt
-from statsmodels.tsa.arima_model import ARMA
+# from statsmodels.tsa.arima_model import ARMA
+from statsmodels.tsa.arima.model import ARIMA
+# from statsmodels.tsa import SARIMAX
 from pmdarima import auto_arima
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -228,6 +230,64 @@ def holt_opt_alpha(ts):
     print(min_aic_des_model.summary())
 
 
+def AR1(ts):
+    # Should use the lag that gets the highest PACF coeficient.
+    model_ar_1 = ARIMA(ts, order=(1, 0, 0))
+    results_ar_1 = model_ar_1.fit()
+    print(results_ar_1.summary())
+    return results_ar_1
+
+
+def AR2(ts):
+    # Should use the lag that gets the highest PACF coeficient.
+    model_ar_2 = ARIMA(ts, order=(2, 0, 0))
+    results_ar_2 = model_ar_2.fit()
+    print(results_ar_2.summary())
+    return results_ar_2
+
+
+def AR5(ts):
+    # Should use the lag that gets the highest PACF coeficient.
+    model_ar_5 = ARIMA(ts, order=(5, 0, 0))
+    results_ar_5 = model_ar_5.fit()
+    print(results_ar_5.summary())
+    return results_ar_5
+
+
+# LLR Test
+def llr_test(res_1, res_2, df=1):
+    l1, l2 = res_1.llf, res_2.llf
+    lr = 2 * (l2 - l1)
+    p = chi2.sf(lr, df).round(3)
+    result = "Insignificant"
+    if p < 0.005:
+        result = "Significant"
+    return p, result
+
+
+def AR_auto(ts):
+    # Automatically find the best order for the AR method.
+    llr = 0
+    p = 1
+    results = ARIMA(ts, order=(p, 0, 0)).fit()
+    while llr < 0.05:
+        results_prev = results
+        p += 1
+        results = ARIMA(ts, order=(p, 0, 0)).fit()
+        llr, _ = llr_test(results_prev, results)
+        print(p, llr)
+
+
+def analyze_resid3(ts):
+    resid = ARIMA(ts, (3, 0, 0)).fit().resid
+    resid.plot()
+    plt.ylabel("Residuals")
+    plt.rc("figure", figsize=(15, 10))
+    plt.title("Visualizing residuals")
+    print(resid.mean(), resid.var())
+    plt.show()
+
+
 # TODO: Keep implementing more forecasting methods (got to ARMA)--> Write forecasting API.
 #  Can be really nice to also use some RNNs and LSTMs.
 
@@ -247,7 +307,11 @@ ts = get_ts(df)
 # exp_smoothing_opt_alpha_forecast(ts)
 # holt_forecast(ts)
 # holt_opt_alpha(ts)
-
+# AR1(ts)
+# AR2(ts)
+# AR5(ts)
+# AR_auto(ts)
+# analyze_resid3(ts)            # Doesn't work at the moment.
 
 
 
