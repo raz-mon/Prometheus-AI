@@ -15,13 +15,11 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.api import SimpleExpSmoothing, Holt
 from statsmodels.tsa.stattools import adfuller
 import statsmodels.graphics.tsaplots as sgt
-# from statsmodels.tsa.arima_model import ARMA
 from statsmodels.tsa.arima.model import ARIMA
 # from statsmodels.tsa import SARIMAX
 from pmdarima import auto_arima
 import matplotlib.pyplot as plt
 import seaborn as sns
-import warnings
 from fbprophet import Prophet
 from sklearn.metrics import mean_absolute_error
 from sklearn import linear_model
@@ -199,7 +197,7 @@ def holt_forecast(ts):
     print(des_model_autofit.summary())
 
 
-def holt_opt_alpha(ts):
+def holt_opt_alpha_forecast(ts):
     ts_holt = ts
     train = ts_holt[0: int(len(ts_holt) * 0.8)]
     test = ts_holt[int(len(ts_holt) * 0.8):]
@@ -230,7 +228,7 @@ def holt_opt_alpha(ts):
     print(min_aic_des_model.summary())
 
 
-def AR1(ts):
+def AR1_forecast(ts):
     # Should use the lag that gets the highest PACF coeficient.
     model_ar_1 = ARIMA(ts, order=(1, 0, 0))
     results_ar_1 = model_ar_1.fit()
@@ -238,7 +236,7 @@ def AR1(ts):
     return results_ar_1
 
 
-def AR2(ts):
+def AR2_forecast(ts):
     # Should use the lag that gets the highest PACF coeficient.
     model_ar_2 = ARIMA(ts, order=(2, 0, 0))
     results_ar_2 = model_ar_2.fit()
@@ -246,7 +244,7 @@ def AR2(ts):
     return results_ar_2
 
 
-def AR5(ts):
+def AR5_forecast(ts):
     # Should use the lag that gets the highest PACF coeficient.
     model_ar_5 = ARIMA(ts, order=(5, 0, 0))
     results_ar_5 = model_ar_5.fit()
@@ -265,7 +263,7 @@ def llr_test(res_1, res_2, df=1):
     return p, result
 
 
-def AR_auto(ts):
+def AR_find_best_p_forecast(ts):
     # Automatically find the best order for the AR method.
     llr = 0
     p = 1
@@ -288,12 +286,212 @@ def analyze_resid3(ts):
     plt.show()
 
 
-# TODO: Keep implementing more forecasting methods (got to ARMA)--> Write forecasting API.
-#  Can be really nice to also use some RNNs and LSTMs.
+def ARIMA_pdq_forecast(ts, p, d, q):
+    print(f'ARIMA (p={p}, d={d}, q={q}')
+    arima_pdq = ARIMA(ts, order=(p, d, q)).fit()
+    print(arima_pdq.summary())
 
 
+def find_best_ARIMA_forecast(ts, p, d, q):
+    p1 = range(0, p)
+    d1 = range(0, d)
+    q1 = range(0, q)
+    pdq = list(itertools.product(p1, d1, q1))
+    for i in range(1, len(pdq)):
+        print("Model: {}".format(pdq[i]))
+
+    results = []
+    for order in pdq:
+        try:
+            model_arima_results = ARIMA(ts, order=order).fit()
+            results.append([order, model_arima_results.aic])
+        except ValueError as e:
+            print(order, "Error", e)
+            results.append([order, float("inf")])
+    results.sort(key=lambda x: x[1])
+    return results[0]       # Best result.
+
+
+def AR_313_forecast(ts):
+    mod = ARIMA(ts, order=(3, 1, 3)).fit()
+    print(mod.summary())
+    return mod
+
+
+"""def SARIMAX(ts, p, d, q, s1, s2, s3, s4):
+    model_sarimax = SARIMAX(
+        ts, exog=wn, order=(p, d, q), seasonal_order=(s1, s2, s3, s4)
+    ).fit()
+    print(model_sarimax.summary())"""
+
+
+def auto_ARIMA_resid(ts):
+    ## Calling auto arima with default settings
+    auto_arima_model = auto_arima(ts)
+    print(auto_arima_model.summary())
+    ## Evaluating residuals
+    sgt.plot_acf(auto_arima_model.resid(), zero=False)
+    plt.rc("figure", figsize=(15, 10))
+    plt.ylabel("Coefficient of correlation")
+    plt.xlabel("Lags")
+    plt.show()
+
+    """
+    # We could also insert some more manual settings:
+    # The commented parameters can be uncommented based on the need.
+    aam = auto_arima(
+        ts,
+        #            exogenous=,
+        #            m=12, SARIMAX s
+        max_order=None,
+        max_p=6,  # Search till p=6
+        max_q=6,  # Search till q=6
+        max_d=2,  # Search till d=2
+        #            max_P= #Search till P=2
+        #            max_Q= #Search till Q=2
+        #            max_D= #Search till D=2
+        maxiter=50,  # Increase if you see no convergence
+        njobs=-1,  # Number of parallel processes
+        #           trend="ct", ##ctt for quadratic; accounts for trend in data
+        information_criterion="oob",  # out of bag aic, aicc, bic, hqic
+        out_of_sample_size=int(len(ts) * 0.2),  ## Validation set of 20% for oob
+    )
+    """
+
+
+def plot_predicts_aam(pred_train, pred, train, test):
+    """
+   # Plots train, test, prediction of training set, and prediction of test set
+   # for auto arima and fbprophet
+    """
+    train.plot(figsize=(15, 10), color="green", label="Train actual")
+
+    # pd.Series(pred_train, index=train[:start_date].index).plot(
+    #     figsize=(15, 10), color="red", label="Train prediction"
+    # )
+    pd.Series(pred_train, index=train.index).plot(
+        figsize=(15, 10), color="red", label="Train prediction"
+    )
+
+    test.plot(figsize=(15, 10), color="blue", label="Test actual")
+
+    # pd.Series(pred, index=test[start_date:].index).plot(
+    #     figsize=(15, 10), color="orange", label="Test prediction"
+    # )
+    pd.Series(pred, index=test.index).plot(
+        figsize=(15, 10), color="orange", label="Test prediction"
+    )
+
+    plt.legend()
+    plt.show()
+
+
+def plot_predicts_man(pred_train, pred, train, test):
+    """
+   # Plots train, test, prediction of training set, and prediction of test set
+   # for manual ARIMA
+    """
+    train.plot(figsize=(15, 10), color="green", label="Train actual")
+
+    pred_train.plot(figsize=(15, 10), color="red", label="Train prediction")
+
+    test.plot(figsize=(15, 10), color="blue", label="Test actual")
+
+    pred.plot(figsize=(15, 10), color="orange", label="Test prediction")
+    plt.legend()
+    plt.show()
+
+
+def fbprohet_forecast(ts):
+    # Divide into train and test set
+    train = ts[:int(len(ts)*0.8)]
+    test = ts[int(len(ts)*0.8):]
+
+    # Plot training and testing periods (in different colors):
+    train.plot(color='green', label='train')
+    test.plot(color='blue', label='test')
+    plt.legend()
+    # plt.show()
+
+
+    ## Convert data to prophet type
+    train_fb = (
+        train.tz_localize(None)
+            .reset_index()
+            # .rename(columns={"timestamp": "ds", "values": "y"})
+            .rename(columns={"index": "ds", "values": "y"})
+    )
+    test_fb = (
+        test.tz_localize(None)
+            .reset_index()
+            # .rename(columns={"timestamp": "ds", "values": "y"})
+            .rename(columns={"index": "ds", "values": "y"})
+    )
+    train_fb
+
+    proph_model = Prophet()
+    pm = proph_model.fit(train_fb)
+
+    future = pd.concat([train_fb[["ds"]], test_fb[["ds"]]])
+    forecast = proph_model.predict(future)
+    forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail()
+
+    # plot_predicts_aam(forecast["yhat"][:278].values, forecast["yhat"][278:].values)   # This is specific.
+    forecast.plot(figsize=(12, 10))
+    plt.show()
+
+
+def auto_ARIMA_forecast(ts):
+    # Divide into train and test set
+    train = ts[:int(len(ts) * 0.8)]
+    test = ts[int(len(ts) * 0.8):]
+
+    aam_default = auto_arima(train)
+    pred_aam_default = aam_default.predict(n_periods=len(test))
+    pred_train_aam_default = aam_default.predict(n_periods=len(train[:int(len(ts) * 0.8)]))
+
+    print(aam_default.summary())
+    print(f'MAE error: {mean_absolute_error(pred_train_aam_default, train)}')
+    plot_predicts_aam(pred_train_aam_default, pred_aam_default, train, test)
+
+
+def auto_ARIME_tuned_forecast(ts):
+    # Divide into train and test set
+    train = ts[:int(len(ts) * 0.8)]
+    test = ts[int(len(ts) * 0.8):]
+
+    aam_tuned = auto_arima(
+        train,
+        #            exogenous=,
+        m=4,  # SARIMAX s
+        max_order=None,
+        max_p=5,  # Search till p=6
+        max_q=5,  # Search till q=6
+        max_d=2,  # Search till d=2
+        max_P=4,  # Search till P=2
+        max_Q=4,  # Search till Q=2
+        max_D=2,  # Search till D=2
+        maxiter=30,  # Increase if you see no convergence
+        njobs=7,  # Number of parallel processes
+        trend="ct",  ##ctt for quadratic; accounts for trend in data
+        information_criterion="aic",  # out of bag aic, aicc, bic, hqic
+        # out_of_sample_size=int(len(ts) * 0.2),  ## Validation set of 20% for oob
+    )
+
+    print(aam_tuned.summary())
+    pred_aam_tuned = aam_tuned.predict(n_periods=len(test))
+    pred_train_aam_tuned = aam_tuned.predict(n_periods=len(train))
+    plot_predicts_aam(pred_train_aam_tuned, pred_aam_tuned, train, test)
+    # print(f'\n\n\nmae: {mean_absolute_error(pred, real)}')
+
+"""------------------------------------------------------------------------------------------------------------------"""
+
+
+# Get time-series in wanted form:
 df = pd.read_csv('../data/csv/seconds/pod_container_cpu_usage_sum_2022-05-06_09-18-36_28h/0.csv')
 ts = get_ts(df)
+
+# Analyze time-series:
 # visualize_ts(ts, 'vals', 'ts')
 # random_walk(ts)
 # white_noise(ts)
@@ -302,22 +500,61 @@ ts = get_ts(df)
 # seasonality_multiplicative(ts)
 # AC(ts)
 # PAC(ts)
+
+# Apply forecasting algorithms on the time-series:
 # Linear_Regression_forecast(ts)
 # exponential_smoothing_forecast(ts)
 # exp_smoothing_opt_alpha_forecast(ts)
 # holt_forecast(ts)
-# holt_opt_alpha(ts)
-# AR1(ts)
-# AR2(ts)
-# AR5(ts)
-# AR_auto(ts)
+# holt_opt_alpha_forecast(ts)
+# AR1_forecast(ts)
+# AR2_forecast(ts)
+# AR5_forecast(ts)
+# AR_find_best_p_forecast(ts)
+# AR_313_forecast(ts)
 # analyze_resid3(ts)            # Doesn't work at the moment.
+# fbprohet_forecast(ts)
+# auto_ARIMA_forecast(ts)
+# auto_ARIME_tuned_forecast(ts)
+
+"""
+# Trying to find a nice forecaster from the ARIMA's.
+import pandas as pd
+train = ts[:int(len(ts) * 0.8)]
+test = ts[int(len(ts) * 0.8):]
+pre = AR_313_forecast(train)
+train_pred = pre.predict(start=train.index[0], end=train.index[-1])
+test_pred = pre.predict(start=train.index[-1], end=train.index[-1] + pd.to_timedelta('2m'))
+print(f'MAE error: {mean_absolute_error(train_pred, train)}')
+plot_predicts_man(train, test_pred, train, test)
+"""
 
 
+def analyze_ts(ts):
+    Dickey_Fuller_test(ts)          # Is the data stationary?
+    seasonality_additive(ts)        # Seasonality of the data.
+    seasonality_multiplicative(ts)  # Seasonality of the data.
+    AC(ts)                          # Auto-correlation.
+    PAC(ts)                         # Partial Auto-correlation.
 
 
-
-
+def forecast(ts, method: str):
+    methods = {'Linear': Linear_Regression_forecast,
+               'exponential smoothing': exponential_smoothing_forecast,
+               'exponential smoothing opt alpha': exp_smoothing_opt_alpha_forecast,
+               'holt': holt_forecast,
+               'holt opt alpha': holt_opt_alpha_forecast,
+               'ARp': AR_find_best_p_forecast,
+               'AR1': AR1_forecast,
+               'AR2': AR2_forecast,
+               'AR5': AR5_forecast,
+               'AR313': AR_313_forecast,
+               'fbprophet': fbprohet_forecast
+               }
+    if not methods.__contains__(method):
+        raise Exception('No such forecasting method yet.. sorry.')
+    forecaster = methods[method]
+    return forecaster(ts)
 
 
 

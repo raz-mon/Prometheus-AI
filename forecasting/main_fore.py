@@ -3,24 +3,19 @@ Main class of forecasting package.
 Here will be the implementation of the forecasting API of the project.
 """
 
-def forecast(data, method, horizon=1, **kwargs):
-    """
-    Forecast horizon points of a time-series 'data', with method 'method'.
-    Each method has its unique parameters, which will be passed in 'kwargs'.
-    Return a time-series with the forecasting period.
-    :param data: The time-series we which to forecast on.
-    :type data:
-    :param method: The method we wish to forecast with.
-    :type method: str
-    :param horizon: Number of points we wish to forecast. Default=1.
-    :type horizon: int
-    :param kwargs:
-    :type kwargs:
-    :return:
-    :rtype:
-    """
-    # TBD
-    return None
+from Methods import analyze_ts, forecast, get_ts
+import pandas as pd
+import sys
+
+def main():
+    df = pd.read_csv('../data/csv/seconds/pod_container_cpu_usage_sum_2022-05-06_09-18-36_28h/0.csv')
+    ts = get_ts(df)
+    analyze_ts(ts)
+    if len(sys.argv) > 1:
+        forecast(ts, sys.argv[1])
+    else:
+        method = 'fbprhophet'               # Choose any other method from the methods in methods.
+        forecast(ts, method)
 
 
 
@@ -40,10 +35,8 @@ def forecast(data, method, horizon=1, **kwargs):
 
 
 
-
-
-
-
+if __name__ == '__main__':
+    main()
 
 
 

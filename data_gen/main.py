@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~mcpq6bO29x9_E7_KESjM2zAsBAbYxwP7MD5JKtQQP2k"
+OPERATE_FIRST_TOKEN = "sha256~PtC3CW0lJMJhxij0n5Hjl6RjEm_oKU4ShBL10ksYs4o"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
 
