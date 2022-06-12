@@ -2,10 +2,15 @@
 
 Todo:
     - Query the two metrics EVERY DAY!
-    - Write down all of the 'legal' application names in 'legal_pod_names' in util.
-    - Implement some forecasting methods.
-    - Delete dated data (already have backup for the seconds).
-    - Write pipeline API for the project (This can be really fun - not so little work also..).
+    - Write function we talked about on the 7.6.2022 (total pipeline basically).
+      What's left is to write forecast_ts (and some extras) and change methods implementation accordingly.
+      We want each forecasting method from the ones I implemented to return the forecast, and the error.
+    - Write down all of the 'legal' application names in 'legal_pod_names' in util (for CPU and memory separetely).
+    - Can make a nice MENU, so that the user will know from what methods he can choose. This can be nice!
+    - Implement more forecasting methods (Add some deep ones).
+    - Write readme.md file in repository.
+    - Write report, make poster.
+    - Write documentation of the code (for all functions).
 
 
 

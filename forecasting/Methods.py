@@ -517,6 +517,24 @@ ts = get_ts(df)
 # auto_ARIMA_forecast(ts)
 # auto_ARIME_tuned_forecast(ts)
 
+
+def analyze_ts(ts):
+    Dickey_Fuller_test(ts)          # Is the data stationary?
+    seasonality_additive(ts)        # Seasonality of the data.
+    seasonality_multiplicative(ts)  # Seasonality of the data.
+    AC(ts)                          # Auto-correlation.
+    PAC(ts)                         # Partial Auto-correlation.
+analyze_ts(ts)
+
+
+def forecast(ts, method: str):
+    if not methods.__contains__(method):
+        raise Exception('No such forecasting method yet.. sorry.')
+    forecaster = methods[method]
+    return forecaster(ts)
+
+    # Todo: If it an ARIMA forecast --> Perform the following code before returning:
+
 """
 # Trying to find a nice forecaster from the ARIMA's.
 import pandas as pd
@@ -530,41 +548,24 @@ plot_predicts_man(train, test_pred, train, test)
 """
 
 
-def analyze_ts(ts):
-    Dickey_Fuller_test(ts)          # Is the data stationary?
-    seasonality_additive(ts)        # Seasonality of the data.
-    seasonality_multiplicative(ts)  # Seasonality of the data.
-    AC(ts)                          # Auto-correlation.
-    PAC(ts)                         # Partial Auto-correlation.
+methods = {'Linear': Linear_Regression_forecast,
+           'exponential smoothing': exponential_smoothing_forecast,
+           'exponential smoothing opt alpha': exp_smoothing_opt_alpha_forecast,
+           'holt': holt_forecast,
+           'holt opt alpha': holt_opt_alpha_forecast,
+           'ARp': AR_find_best_p_forecast,
+           'AR1': AR1_forecast,
+           'AR2': AR2_forecast,
+           'AR5': AR5_forecast,
+           'AR313': AR_313_forecast,
+           'AR auto': auto_ARIMA_forecast,
+           'AR auto tuned': auto_ARIME_tuned_forecast,
+           'fbprophet': fbprohet_forecast
+           }
 
-
-def forecast(ts, method: str):
-    methods = {'Linear': Linear_Regression_forecast,
-               'exponential smoothing': exponential_smoothing_forecast,
-               'exponential smoothing opt alpha': exp_smoothing_opt_alpha_forecast,
-               'holt': holt_forecast,
-               'holt opt alpha': holt_opt_alpha_forecast,
-               'ARp': AR_find_best_p_forecast,
-               'AR1': AR1_forecast,
-               'AR2': AR2_forecast,
-               'AR5': AR5_forecast,
-               'AR313': AR_313_forecast,
-               'fbprophet': fbprohet_forecast
-               }
-    if not methods.__contains__(method):
-        raise Exception('No such forecasting method yet.. sorry.')
-    forecaster = methods[method]
-    return forecaster(ts)
-
-
-
-
-
-
-
-
-
-
+errors = {
+    'mean absolute error': mean_absolute_error
+}
 
 
 

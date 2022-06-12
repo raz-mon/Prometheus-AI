@@ -18,9 +18,9 @@ def aggregate_app(path, app_name, metric):
     num_of_files = 0    # Number of query-results in which the application returned a result.
     tot_num_of_files = 0    # Total number of files
     for path_ in contents:
-        contents2 = pathlib.Path(path_).iterdir()
         if not str(path_).__contains__(metric):
             continue
+        contents2 = pathlib.Path(path_).iterdir()
         tot_num_of_files += 1
 
         for path2 in contents2:
@@ -40,7 +40,7 @@ def aggregate_app(path, app_name, metric):
                     num_of_files += 1
                     agg_df = aggregate_results_df(agg_df, df1)
                     break
-    # Todo: Fill the missing data-points (copy last value).
+    # Todo: Fill the missing data-points (mean of last or copy last value).
     file_name = f'../data/Resampled_hour_aggregated/{app_name}_{metric}_res-h_agg.csv'
     if not agg_df is None:
         agg_df.to_csv(file_name)        # Save to .csv file.

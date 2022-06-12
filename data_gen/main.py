@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~PtC3CW0lJMJhxij0n5Hjl6RjEm_oKU4ShBL10ksYs4o"
+OPERATE_FIRST_TOKEN = "sha256~n7Z5XeEWYbN1pg305K-O4VUx8B3VARixdLYafl9k18o"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
 
@@ -12,7 +12,7 @@ def main():
     # Initialize connection Object.
     conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
     date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
-    time_back = "28h"                                           # How much time back does the query go.
+    time_back = "25h"                                           # How much time back does the query go.
 
 
     # Memory query
