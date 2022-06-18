@@ -23,11 +23,6 @@ from prometheus_api_client.utils import parse_datetime
 
 
 
-
-
-
-
-
 # History:
 """
 df = pd.read_csv('../data/Resampled_hour_aggregated/cloud-credential-operator_cpu_usage_res-h_agg.csv')

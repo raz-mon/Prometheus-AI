@@ -3,8 +3,11 @@
 Todo:
     - Query the two metrics EVERY DAY!
     - Write function we talked about on the 7.6.2022 (total pipeline basically).
-      What's left is to write forecast_ts (and some extras) and change methods implementation accordingly.
-      We want each forecasting method from the ones I implemented to return the forecast, and the error.
+      What's left:
+        - Write forecast_ts.
+        - Change methods implementation in Methods.py so that each will return the error of the prediction period.
+        - No printing in the methods, take printing and plotting outside of the forecasting functions, so it can
+          be done at the will of the user.
     - Write down all of the 'legal' application names in 'legal_pod_names' in util (for CPU and memory separetely).
     - Can make a nice MENU, so that the user will know from what methods he can choose. This can be nice!
     - Implement more forecasting methods (Add some deep ones).

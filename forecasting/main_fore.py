@@ -3,8 +3,9 @@ Main class of forecasting package.
 Here will be the implementation of the forecasting API of the project.
 """
 
-from Methods import analyze_ts, forecast, get_ts, methods, errors
+from Methods import analyze_ts, forecast, get_ts, methods, error_metrics, metrics
 from data_gen.util import get_pod_name
+from menu import metric_menu, application_menu, method_menu, gran_menu, cm_menu, error_metric_menu
 import pandas as pd
 import numpy as np
 import sys
@@ -12,40 +13,18 @@ import os
 import pathlib
 
 def main():
-
-    # Print menu to user - He can choose one after the other the method, metric etc.
-    """
-    method = method_menu()
+    # Print menu to user.
     metric = metric_menu()
-    error_metric = error_metric_menu()
-    application = application_menu()
+    application = application_menu(metric)
+    method = method_menu()
     granularity = gran_menu()
     compress_method = cm_menu()
-    """
+    error_metric = error_metric_menu()
 
-    result, error = forecast(data_path, method, application, metric, error_metric, granularity, compress_method)
+    error = total_error(method, metric, application, error_metric, granularity, compress_method)
+    print(f'Total error: {error}')
 
-
-
-
-
-
-    """df = pd.read_csv('../data/csv/seconds/pod_container_cpu_usage_sum_2022-05-06_09-18-36_28h/0.csv')
-    ts = get_ts(df)
-    analyze_ts(ts)
-    if len(sys.argv) > 1:
-        forecast(ts, sys.argv[1])
-    else:
-        method = 'fbprhophet'               # Choose any other method from the methods in methods.
-        forecast(ts, method)
-    """
-
-    # Todo: Make a function that gets the following parameters: (data_path, forecasting_method, application, metric,
-    #                                                            error_metric, Granularity, compress_method)
-    #  and returns the forecast of this time-series, and the loss (according to the error-metric given).
-
-
-def total_error(path, forecasting_method, metric, application, error_metric, granularity, compress_method='mean',
+def total_error(forecasting_method, metric, application, error_metric, granularity, compress_method='mean',
              test_len=0.2):
     """
     Perform the forecasting method 'forecasting_method' on all the data of 'application', and
@@ -74,9 +53,10 @@ def total_error(path, forecasting_method, metric, application, error_metric, gra
     :rtype: (ts, error).
     """
     tot_err = 0.0
+    metric_full = metrics[metric]
     contents = pathlib.Path('../data/csv/seconds')
     for path1 in contents.iterdir():
-        if not str(path1).__contains__(metric):
+        if metric_full not in str(path1):
             continue            # Not the desired metric.
         contents2 = pathlib.Path(path1)
         # Check if the directory is of metric 'metric'. If not --> Continue.
@@ -88,23 +68,16 @@ def total_error(path, forecasting_method, metric, application, error_metric, gra
             ts = get_ts(df)
             # Resample for correct granularity
             resample_ts(ts, granularity, compress_method)
-            _, err = forecast_ts(ts, forecasting_method, error_metric)
+            _, err = forecast(ts, forecasting_method, error_metric, test_len, False, False)
             tot_err += err
     return tot_err
 
 
-
-def forecast_ts(ts, forecasting_method, error_metric):
-    # Initialize forecaster
-    forecaster = methods[forecasting_method]
-
-    return pred_ts, error
-
-
-def forecast(path, forecasting_method, error_metric, test_len):
-    # TBD
-    return None
-
+def forecast_path(path, forecasting_method, error_metric, test_len, plot=False, print_err=False):
+    df = pd.read_csv(path)
+    ts = get_ts(df)
+    pred, err = forecast(ts, forecasting_method, error_metric, test_len, plot, print_err)
+    return pred, err
 
 def resample_ts(ts, granularity, compress_method):
     if compress_method == 'mean':
@@ -121,15 +94,6 @@ def resample_ts(ts, granularity, compress_method):
         ts = ts.astype(float).resample(granularity).min()
     elif compress_method == 'median':
         ts = ts.astype(float).resample(granularity).median()
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':

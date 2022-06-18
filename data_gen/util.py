@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from main import OPERATE_FIRST_TOKEN, THANOS_URL
-from Thanos_conn import ThanosConnect
+from data_gen.main import OPERATE_FIRST_TOKEN, THANOS_URL
+from data_gen.Thanos_conn import ThanosConnect
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from prometheus_api_client.utils import parse_datetime

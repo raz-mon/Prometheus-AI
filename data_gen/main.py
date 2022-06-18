@@ -1,10 +1,10 @@
 from prometheus_api_client.utils import parse_datetime
-from Thanos_conn import ThanosConnect, leg, current_time_for_file, good_result
+from data_gen.Thanos_conn import ThanosConnect, leg, current_time_for_file, good_result
 import pandas as pd
 import numpy as np
 
 # token-gen url:  https://www.operate-first.cloud/apps/content/observatorium/thanos/thanos_programmatic_access.html
-OPERATE_FIRST_TOKEN = "sha256~n7Z5XeEWYbN1pg305K-O4VUx8B3VARixdLYafl9k18o"
+OPERATE_FIRST_TOKEN = "sha256~gmImH6zcn7BSEekNP08L9ns3ytbqInfNnp9R4zqJoME"
 THANOS_URL = "https://thanos-query-frontend-opf-observatorium.apps.smaug.na.operate-first.cloud"
 
 
@@ -12,7 +12,7 @@ def main():
     # Initialize connection Object.
     conn = ThanosConnect(THANOS_URL, OPERATE_FIRST_TOKEN)
     date_time_for_file = current_time_for_file()                # Current time in datetime protocol.
-    time_back = "25h"                                           # How much time back does the query go.
+    time_back = "28h"                                           # How much time back does the query go.
 
 
     # Memory query
