@@ -11,8 +11,7 @@ def metric_menu():
     for ind, metric in enumerate(metrics.keys()):
         print(f'{ind}) {metric}')
     choice = input('')
-
-    return list(metrics.keys())[int(choice)]
+    return metrics[list(metrics.keys())[int(choice)]]
 
 
 def application_menu(metric):
@@ -36,7 +35,7 @@ def method_menu():
     for ind, method in enumerate(methods.keys()):
         print(f'{ind}) {method}')
     choice = input('')
-    return methods[int(choice)]
+    return methods[list(methods.keys())[int(choice)]]
 
 
 def gran_menu():
@@ -57,10 +56,10 @@ def cm_menu():
 
 def error_metric_menu():
     print(f'Please choose an error metric:')
-    for ind, em in enumerate(error_metrics):
+    for ind, em in enumerate(error_metrics.keys()):
         print(f'{ind}) {em}')
     choice = input('')
-    return error_metrics[int(choice)]
+    return error_metrics[list(error_metrics.keys())[int(choice)]]
 
 
 

@@ -53,22 +53,21 @@ def total_error(forecasting_method, metric, application, error_metric, granulari
     :rtype: (ts, error).
     """
     tot_err = 0.0
-    metric_full = metrics[metric]
     contents = pathlib.Path('../data/csv/seconds')
     for path1 in contents.iterdir():
-        if metric_full not in str(path1):
-            continue            # Not the desired metric.
+        if metric not in str(path1):
+            continue                             # Not the desired metric.
         contents2 = pathlib.Path(path1)
         # Check if the directory is of metric 'metric'. If not --> Continue.
         for path2 in contents2.iterdir():
             # Read csv file, check if it is of application 'application'. If not --> Continue.
             df = pd.read_csv(path2)
             if not get_pod_name(df)[:len(application)] == application:
-                continue        # Not the desired application.
+                continue                         # Not the desired application.
             ts = get_ts(df)
             # Resample for correct granularity
             resample_ts(ts, granularity, compress_method)
-            _, err = forecast(ts, forecasting_method, error_metric, test_len, False, False)
+            pred, err = forecast(ts, forecasting_method, error_metric, test_len, False, False)
             tot_err += err
     return tot_err
 

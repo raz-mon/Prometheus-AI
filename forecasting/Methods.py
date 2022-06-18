@@ -16,7 +16,6 @@ from statsmodels.tsa.api import SimpleExpSmoothing, Holt
 from statsmodels.tsa.stattools import adfuller
 import statsmodels.graphics.tsaplots as sgt
 from statsmodels.tsa.arima.model import ARIMA
-# from statsmodels.tsa import SARIMAX
 from pmdarima import auto_arima
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -28,10 +27,11 @@ import numpy as np
 import itertools
 import warnings
 
-
 warnings.filterwarnings("ignore")
 
+
 def get_ts(df):
+    """Convert index to datetime format, take only 'values' column."""
     ts = df
     ts.index = pd.to_datetime(ts.index, unit='s', utc=True)
     return ts['values'].astype(float)
@@ -77,6 +77,7 @@ def random_walk(ts):
 
 
 def Dickey_Fuller_test(ts):
+    """Test the stationarity of ts (time-series)."""
     dft = adfuller(ts)
     print(
         f"p value {round(dft[1], 4)}",
@@ -86,6 +87,7 @@ def Dickey_Fuller_test(ts):
 
 
 def seasonality_additive(ts):
+    """Analyze seasonality of ts"""
     plt.rc("figure", figsize=(15, 10))
     sd_add = seasonal_decompose(ts, model="additive", period=30)
     sd_add.plot()  # Image manipulation doesn't work here.
@@ -93,6 +95,7 @@ def seasonality_additive(ts):
 
 
 def seasonality_multiplicative(ts):
+    """Analyze seasonality of ts"""
     plt.rc("figure", figsize=(15, 10))
     sd_add = seasonal_decompose(ts, model="multiplicative", period=30)
     sd_add.plot()  # Image manipulation doesn't work here.
@@ -100,6 +103,7 @@ def seasonality_multiplicative(ts):
 
 
 def AC(ts):
+    """Analyze the Auto-Correlation of ts"""
     sgt.plot_acf(ts, lags=50, zero=False)
     ## We give zero=False since correlation of a time series with itself is always 1
     plt.rc("figure", figsize=(15, 10))
@@ -109,6 +113,7 @@ def AC(ts):
 
 
 def PAC(ts):
+    """Analyze the Partial-Auto-Correlation of ts."""
     sgt.plot_pacf(ts, zero=False, method="ols")
     plt.rc("figure", figsize=(15, 10))
     plt.ylabel("Coefficient of correlation")
@@ -117,6 +122,7 @@ def PAC(ts):
 
 
 def Linear_Regression_forecast(ts):
+    """Linear regression forecast."""
     # Training the algorithm
     lr = linear_model.LinearRegression()
     lr.fit(
@@ -131,6 +137,7 @@ def Linear_Regression_forecast(ts):
     
 
 def exponential_smoothing_forecast(ts):
+    """Forecasting algorithm using Exponential-Smoothing."""
     # Try autofit
     ses_model = SimpleExpSmoothing(ts["values"])
     ses_model_autofit = ses_model.fit(optimized=True, use_brute=True)
@@ -138,6 +145,8 @@ def exponential_smoothing_forecast(ts):
     return ses_model_autofit
 
 def exp_smoothing_opt_alpha_forecast(ts):
+    """Forecasting algorithm using Exponential-Smoothing.
+    Finds the best alpha manually."""
     ses_model = SimpleExpSmoothing(ts["values"])
 
     # Try to optimize the coefficient by finding minimum AIC.
@@ -160,6 +169,7 @@ def exp_smoothing_opt_alpha_forecast(ts):
 
 
 def holt_forecast(ts):
+    """Forecasting using the Holt algorithm."""
     # since optimization is intensive, we are sampling for this method
     # ts_holt = metric_df["value"].astype(float).resample("30min").mean()
 
@@ -170,6 +180,8 @@ def holt_forecast(ts):
 
 
 def holt_opt_alpha_forecast(ts):
+    """Forecasting using the Holt algorithm.
+    Finds optimal alpha manually."""
     des_model = Holt(ts["values"])
 
     # Try to optimize the coefficient:
@@ -198,6 +210,8 @@ def holt_opt_alpha_forecast(ts):
 
 
 def AR1_forecast(ts):
+    """Forecast using an Auto-Regressive model. This model uses only p from the p,d,q available parameters of
+    ARIMA, and in this method, p is set to 1 - i.e., looking only one step behind."""
     # Should use the lag that gets the highest PACF coeficient.
     model_ar_1 = ARIMA(ts, order=(1, 0, 0))
     results_ar_1 = model_ar_1.fit()
@@ -206,6 +220,7 @@ def AR1_forecast(ts):
 
 
 def AR2_forecast(ts):
+    """Forecast using an Auto-Regressive model, in which p=2."""
     # Should use the lag that gets the highest PACF coeficient.
     model_ar_2 = ARIMA(ts, order=(2, 0, 0))
     results_ar_2 = model_ar_2.fit()
@@ -214,6 +229,7 @@ def AR2_forecast(ts):
 
 
 def AR5_forecast(ts):
+    """Forecast using an Auto-Regressive model, in which p=5."""
     # Should use the lag that gets the highest PACF coeficient.
     model_ar_5 = ARIMA(ts, order=(5, 0, 0))
     results_ar_5 = model_ar_5.fit()
@@ -223,6 +239,7 @@ def AR5_forecast(ts):
 
 # LLR Test
 def llr_test(res_1, res_2, df=1):
+    """Check if the new model is significantly better."""
     l1, l2 = res_1.llf, res_2.llf
     lr = 2 * (l2 - l1)
     p = chi2.sf(lr, df).round(3)
@@ -233,6 +250,7 @@ def llr_test(res_1, res_2, df=1):
 
 
 def AR_find_best_p_forecast(ts):
+    """Forecast using an Auto-Regressive model (AR). Find the best p manually."""
     # Automatically find the best order for the AR_p method (meaning AR using p only).
     llr = 0
     p = 1
@@ -246,6 +264,7 @@ def AR_find_best_p_forecast(ts):
 
 
 def analyze_resid3(ts):
+    """Analyze the residuals of the ARIMA model results, in which p=3."""
     resid = ARIMA(ts, (3, 0, 0)).fit().resid
     resid.plot()
     plt.ylabel("Residuals")
