@@ -1,7 +1,7 @@
 from Methods import methods, error_metrics, metrics
 from data_gen.util import cpu_legal_pod_names, memory_legal_pod_names
 
-granularities = ['s', 'h', 'w', 'm', 'y']          # [second, hour, week, month, year]
+granularities = ['s', 'min', '10min', '30min', 'h', 'D', 'W', 'M', 'Y']          # [second, hour, week, month, year]
 compress_methods = ['mean', 'max', 'min', 'last', 'first', 'median', 'sum']
 
 # from menu import metric_menu, application_menu, method_menu, gran_menu, cm_menu, error_metric_menu
@@ -35,7 +35,7 @@ def method_menu():
     for ind, method in enumerate(methods.keys()):
         print(f'{ind}) {method}')
     choice = input('')
-    return methods[list(methods.keys())[int(choice)]]
+    return list(methods.keys())[int(choice)]
 
 
 def gran_menu():
@@ -56,11 +56,20 @@ def cm_menu():
 
 def error_metric_menu():
     print(f'Please choose an error metric:')
-    for ind, em in enumerate(error_metrics.keys()):
+    error_metrics_keys = list(error_metrics.keys())
+    for ind, em in enumerate(error_metrics_keys):
         print(f'{ind}) {em}')
     choice = input('')
-    return error_metrics[list(error_metrics.keys())[int(choice)]]
+    return error_metrics_keys[int(choice)]
 
+
+def plot_one_menu():
+    options = ['Yes', 'No']
+    print(f'Plot one?')
+    for ind, op in enumerate(options):
+        print(f'{ind}) {op}')
+    choice = input('')
+    return options[int(choice)]
 
 
 

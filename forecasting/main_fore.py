@@ -5,11 +5,9 @@ Here will be the implementation of the forecasting API of the project.
 
 from Methods import analyze_ts, forecast, get_ts, methods, error_metrics, metrics
 from data_gen.util import get_pod_name
-from menu import metric_menu, application_menu, method_menu, gran_menu, cm_menu, error_metric_menu
+from menu import metric_menu, application_menu, method_menu, gran_menu, cm_menu, error_metric_menu, plot_one_menu
+from data_gen.Thanos_conn import leg
 import pandas as pd
-import numpy as np
-import sys
-import os
 import pathlib
 
 def main():
@@ -20,9 +18,14 @@ def main():
     granularity = gran_menu()
     compress_method = cm_menu()
     error_metric = error_metric_menu()
+    plot_one = plot_one_menu()
 
-    error = total_error(method, metric, application, error_metric, granularity, compress_method)
-    print(f'Total error: {error}')
+    if (plot_one == 'Yes'):
+        ts = find_ts(metric, application, granularity, compress_method)
+        forecast(ts, method, application, error_metric, 0.2, True, True)
+    else:
+        error = total_error(method, metric, application, error_metric, granularity, compress_method)
+        print(f'Total error: {error}')
 
 def total_error(forecasting_method, metric, application, error_metric, granularity, compress_method='mean',
              test_len=0.2):
@@ -54,20 +57,26 @@ def total_error(forecasting_method, metric, application, error_metric, granulari
     """
     tot_err = 0.0
     contents = pathlib.Path('../data/csv/seconds')
+    # contents = pathlib.Path('../test_dir (delete)')
     for path1 in contents.iterdir():
-        if metric not in str(path1):
+        if leg(metric) not in str(path1):
             continue                             # Not the desired metric.
         contents2 = pathlib.Path(path1)
         # Check if the directory is of metric 'metric'. If not --> Continue.
         for path2 in contents2.iterdir():
+            if 'problem_indexes' in str(path2):
+                continue
             # Read csv file, check if it is of application 'application'. If not --> Continue.
             df = pd.read_csv(path2)
-            if not get_pod_name(df)[:len(application)] == application:
-                continue                         # Not the desired application.
+            pod_name = get_pod_name(df)[:len(application)]
+            is_application = (pod_name == application)
+            if not is_application:
+                continue
             ts = get_ts(df)
             # Resample for correct granularity
-            resample_ts(ts, granularity, compress_method)
-            pred, err = forecast(ts, forecasting_method, error_metric, test_len, False, False)
+            ts = resample_ts(ts, granularity, compress_method)
+            ts = ts.fillna(method="ffill")
+            pred, err = forecast(ts, forecasting_method, application, error_metric, test_len, False, False)
             tot_err += err
     return tot_err
 
@@ -93,6 +102,42 @@ def resample_ts(ts, granularity, compress_method):
         ts = ts.astype(float).resample(granularity).min()
     elif compress_method == 'median':
         ts = ts.astype(float).resample(granularity).median()
+    return ts
+
+
+def find_ts(metric, application, granularity, compress_method):
+    """Return first time-series of metric 'metric', application 'application', resampled to granularity 'granilarity'
+    with compress method 'compress method'"""
+    ts = None
+    found = False
+    count = 0
+    contents = pathlib.Path('../data/csv/seconds')
+    for path1 in contents.iterdir():
+        if leg(metric) not in str(path1):
+            continue
+        contents2 = pathlib.Path(path1)
+        for path2 in contents2.iterdir():
+            if 'problem_indexes' in str(path2):
+                continue
+            df = pd.read_csv(path2)
+            pod_name = get_pod_name(df)[:len(application)]
+            is_application = (pod_name == application)
+            if not is_application:
+                continue
+            count = count + 1
+            if count < 30:
+                continue
+            ts = get_ts(df)
+            # Resample for correct granularity
+            ts = resample_ts(ts, granularity, compress_method)
+            ts = ts.fillna(method="ffill")
+            found = True
+            break
+        if found:
+            break
+    if ts is None:
+        raise Exception(f'No time-series found for metric {metric}, application {application} in our data-base!')
+    return ts
 
 
 if __name__ == '__main__':

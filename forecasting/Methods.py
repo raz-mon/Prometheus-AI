@@ -33,6 +33,7 @@ warnings.filterwarnings("ignore")
 def get_ts(df):
     """Convert index to datetime format, take only 'values' column."""
     ts = df
+    ts.index = ts['time']
     ts.index = pd.to_datetime(ts.index, unit='s', utc=True)
     return ts['values'].astype(float)
 
@@ -147,7 +148,7 @@ def exponential_smoothing_forecast(ts):
 def exp_smoothing_opt_alpha_forecast(ts):
     """Forecasting algorithm using Exponential-Smoothing.
     Finds the best alpha manually."""
-    ses_model = SimpleExpSmoothing(ts["values"])
+    ses_model = SimpleExpSmoothing(ts)
 
     # Try to optimize the coefficient by finding minimum AIC.
     min_ses_aic = 99999999
@@ -275,15 +276,14 @@ def analyze_resid3(ts):
 
 
 def ARIMA_pdq_forecast(ts, p, d, q):
-    # print(f'ARIMA (p={p}, d={d}, q={q}')
     arima_pdq = ARIMA(ts, order=(p, d, q)).fit()
     # print(arima_pdq.summary())
     return arima_pdq
 
-def find_best_ARIMA_forecast(ts, p_lim, d_lim, q_lim):
-    p1 = range(0, p_lim)
-    d1 = range(0, d_lim)
-    q1 = range(0, q_lim)
+def ARIMA_grid_pdq(ts):
+    p1 = range(0, 5)
+    d1 = range(0, 5)
+    q1 = range(0, 5)
     pdq = list(itertools.product(p1, d1, q1))
 
     results = []
@@ -294,12 +294,12 @@ def find_best_ARIMA_forecast(ts, p_lim, d_lim, q_lim):
         except ValueError as e:
             results.append([order, float("inf")])
     results.sort(key=lambda x: x[1])
-    return results[0]       # Best result.
+    return results[0][0]       # Best result.
 
 
 def AR_313_forecast(ts):
     mod = ARIMA(ts, order=(3, 1, 3)).fit()
-    print(mod.summary())
+    # print(mod.summary())
     return mod
 
 
@@ -344,7 +344,7 @@ def auto_ARIMA_resid(ts):
     """
 
 
-def plot_predicts_aam(pred_train, pred, train, test):
+def plot_predicts_aam(pred_train, pred, train, test, method, application):
     """
    # Plots train, test, prediction of training set, and prediction of test set
    # for auto arima and fbprophet
@@ -368,10 +368,16 @@ def plot_predicts_aam(pred_train, pred, train, test):
     )
 
     plt.legend()
+    if application is None:
+        plt.title(f'method: {method}')
+    else:
+        plt.title(f'app: {application}, method: {method}')
+    plt.xlabel('time')
+    plt.ylabel('value')
     plt.show()
 
 
-def plot_predicts_man(pred_train, pred_test, train, test):
+def plot_predicts_man(pred_train, pred_test, train, test, method, application):
     """
     Plots train, test, prediction of training set, and prediction of test set for manual ARIMA.
     """
@@ -380,6 +386,12 @@ def plot_predicts_man(pred_train, pred_test, train, test):
     test.plot(figsize=(15, 10), color="blue", label="Test actual")
     pred_test.plot(figsize=(15, 10), color="orange", label="Test prediction")
     plt.legend()
+    if application is None:
+        plt.title(f'method: {method}')
+    else:
+        plt.title(f'app: {application}, method: {method}')
+    plt.xlabel('time')
+    plt.ylabel('value')
     plt.show()
 
 
@@ -412,7 +424,7 @@ def auto_ARIMA_forecast(ts):
     # Divide into train and test set
     # train = ts[:int(len(ts) * 0.8)]
     # test = ts[int(len(ts) * 0.8):]
-
+    #
     # aam_default = auto_arima(train)
     # pred_aam_default = aam_default.predict(n_periods=len(test))
     # pred_train_aam_default = aam_default.predict(n_periods=len(train[:int(len(ts) * 0.8)]))
@@ -477,8 +489,8 @@ methods = {'Linear': Linear_Regression_forecast,
            'AR1': AR1_forecast,
            'AR2': AR2_forecast,
            'AR5': AR5_forecast,
-           'ARIMA pdq': ARIMA_pdq_forecast,
-           'ARIMA best pdq lim': find_best_ARIMA_forecast,
+           # 'ARIMA pdq': ARIMA_pdq_forecast,
+           'ARIMA grid pdq': ARIMA_grid_pdq,
            'AR313': AR_313_forecast,
            'AR auto': auto_ARIMA_forecast,
            'AR auto tuned': auto_ARIME_tuned_forecast,
@@ -504,7 +516,7 @@ def analyze_ts(ts):
     PAC(ts)                         # Partial Auto-correlation.
 
 
-def forecast(ts, method: str, error_metric='mae', pred_len=0.2, plot=False, print_errors=False):
+def forecast(ts, method: str, application=None, error_metric='mae', pred_len=0.2, plot=False, print_errors=False):
     train_len = 1 - pred_len
     last_train_ind = int(len(ts) * train_len)
     train = ts[:last_train_ind]
@@ -532,8 +544,7 @@ def forecast(ts, method: str, error_metric='mae', pred_len=0.2, plot=False, prin
             print(f'error (test): {err}')
         return pred, err
 
-    elif method in ['AR1', 'AR2', 'AR5', 'ARp', 'ARIMA pdq', 'ARIMA best pdq lim', 'AR auto', 'AR auto tuned',
-                    'SARIMAX 3133134']:
+    elif method in ['AR1', 'AR2', 'AR5', 'ARp', 'ARIMA grid pdq', 'AR313', 'SARIMAX 3133134']:
         pre = forecaster(train)
         train_pred = pre.predict(start=train.index[0], end=train.index[-1], n_periods=len(train))
         test_pred = pre.predict(start=test.index[0], end=test.index[-1], n_periods=len(test))
@@ -542,11 +553,25 @@ def forecast(ts, method: str, error_metric='mae', pred_len=0.2, plot=False, prin
         error_test = critereon(test, test_pred)
         error_train = critereon(train, train_pred)
         if plot:
-            plot_predicts_man(train_pred, test_pred, train, test)
+            plot_predicts_man(train_pred, test_pred, train, test, method, application)
         if print_errors:
             print(f'MAE error test: {error_test}')
             print(f'MAE error train: {error_train}')
+        return test_pred, error_test
 
+    elif method in ['AR auto', 'AR auto tuned']:
+        pre = forecaster(train)
+        train_pred = pre.predict(start=train.index[0], end=train.index[-1], n_periods=len(train))
+        test_pred = pre.predict(start=test.index[0], end=test.index[-1], n_periods=len(test))
+        # train_pred = pre.predict(n_periods=len(train))
+        # test_pred = pre.predict(n_periods=len(test))
+        error_test = critereon(test, test_pred)
+        error_train = critereon(train, train_pred)
+        if plot:
+            plot_predicts_aam(train_pred, test_pred, train, test, method, application)
+        if print_errors:
+            print(f'MAE error test: {error_test}')
+            print(f'MAE error train: {error_train}')
         return test_pred, error_test
 
     elif method in ['Liner', 'exponential smoothing', 'exponential smoothing opt alpha', 'holt', 'holt opt alpha']:
@@ -559,6 +584,10 @@ def forecast(ts, method: str, error_metric='mae', pred_len=0.2, plot=False, prin
 
 
 # df = pd.read_csv('../data/csv/seconds/pod_container_cpu_usage_sum_2022-05-06_09-18-36_28h/10.csv')
+# df = pd.read_pickle('../forecasting/ts-notebooks/ts.pkl')
+# print(df)
+# df['values'] = df['value']
+# print(df)
 # ts = get_ts(df)
 # forecast(ts, 'SARIMAX 3133134', plot=True, print_errors=True)
 
