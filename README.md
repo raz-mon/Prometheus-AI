@@ -39,10 +39,10 @@ There are many supplamentary methods you can run in order to manually control th
 Some more execution options - TBD.
 
 
-## <ins>Useful links (one of the two):</ins>
+## <ins>Useful links:</ins>
 
-### <ins>Theory:</ins>
-*Add papers and theoretical material.*
+### Theory:
+[DeepAR](https://arxiv.org/abs/1704.04110)
 
 ### <ins>Notebooks</ins>
 1. **[Fetching metrics data](https://github.com/aicoe-aiops/time-series/blob/master/notebooks/ts-1-fetching-metrics.ipynb)**
