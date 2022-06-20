@@ -6,13 +6,13 @@ In this project, we wish to write an API that performs the following tasks:
  * Poll data from Prometheuse constantly. On this data we will use our classical and Deep-Learning algorithms.
  * Organize the data in an orderly fasion on the local computer running the queries (see file-paths before running).
  * Offer the user to pick the following parameters when performing forecasting and error calculation (goodness of a forecasting method on the data-set):
-   * Metric (cpu or memory in this case).
-   * Application (from the applications monitored - see list in data_get/utils.py).
-   * Forecasting method (See implemented methods in forecasting/Methods.py).
-   * Test segment length (proportional to whole data-length).
-   * Granularity of the data.
-   * Compression method used to aggregate data-samples to the wanted granularity.
-   * Error metric.
+   * `Metric` (cpu or memory in this case).
+   * `Application` (from the applications monitored - see list in data_get/utils.py).
+   * `Forecasting method` (See implemented methods in forecasting/Methods.py).
+   * `Test segment length` (proportional to whole data-length).
+   * `Granularity` of the data.
+   * `Compression method` used to aggregate data-samples to the wanted granularity.
+   * `Error metric`.
 
 Other than these options, the user can also choose if he wants to:
   * Traverse the whole data-set, aggregating the error of a specific metric and application using a specific forecasting method.
@@ -33,6 +33,8 @@ python forecasting/main.py
 ```
 
 in order to run the menu-code from which you can choose the forecasting parameters. Executing this module will also run the forecasting method chosen on the data chosen, and plot the result or aggregate the loss respectively to the choice of 'plot one?'.
+
+There are many supplamentary methods you can run in order to manually control the data inserted, the forecasting method parameters etc.
 
 
 ## Useful links (one of the two):
