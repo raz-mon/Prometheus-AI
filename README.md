@@ -1,7 +1,7 @@
 # <ins>Prometheus-AI</ins>
 Applying classical and Deep-Learning algorithms to time-series data, collected through Prometheus (Thanos).
 
-## Project goals
+## <ins>Project goals</ins>
 In this project, we wish to write an API that performs the following tasks:
  * Poll data from Prometheuse constantly. On this data we will use our classical and Deep-Learning algorithms.
  * Organize the data in an orderly fasion on the local computer running the queries (see file-paths before running).
@@ -20,12 +20,12 @@ Other than these options, the user can also choose if he wants to:
 
 All these options are chosen by the user via the menu-interface that is printed to the user (see forecasting/main_fore.py).
 
-## Introduction and motivation
+## <ins>Introduction and motivation</ins>
 Time-series (ts) forecasting has been a major field interested and invested in by the industry for the last 10-20 years. In years prior to 2019, mainly classical forecasting algorithms were used (e.g., ARIMA models, exponential smoothing etc.). 
 In 2019, a brakethrough was achieved for forecasting using Deep-Learning methods (See [DeepAR](https://arxiv.org/abs/1704.04110)). From then an on, forecasting via Deep-Learning methods gained more and more attention, resulting in some very good models used today.
 In this project we wish to implement some of the classical methods, along with some Deep-Learning methods, and apply them to a data-set of time-series we will aggregate throughout the project timeline. 
 
-## How to run the code:
+## <ins>How to run the code:</ins>
 From the root directory, run
 
 ```
@@ -39,7 +39,7 @@ There are many supplamentary methods you can run in order to manually control th
 Some more execution options - TBD.
 
 
-## Useful links (one of the two):
+## <ins>Useful links (one of the two):</ins>
 
 
  
