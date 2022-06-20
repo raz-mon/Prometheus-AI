@@ -5,7 +5,8 @@ Here will be the implementation of the forecasting API of the project.
 
 from Methods import analyze_ts, forecast, get_ts, methods, error_metrics, metrics
 from data_gen.util import get_pod_name
-from menu import metric_menu, application_menu, method_menu, gran_menu, cm_menu, error_metric_menu, plot_one_menu
+from menu import metric_menu, application_menu, method_menu, gran_menu, cm_menu, error_metric_menu, plot_one_menu, \
+    test_len_menu
 from data_gen.Thanos_conn import leg
 import pandas as pd
 import pathlib
@@ -15,6 +16,7 @@ def main():
     metric = metric_menu()
     application = application_menu(metric)
     method = method_menu()
+    test_len = test_len_menu()
     granularity = gran_menu()
     compress_method = cm_menu()
     error_metric = error_metric_menu()
@@ -22,13 +24,13 @@ def main():
 
     if (plot_one == 'Yes'):
         ts = find_ts(metric, application, granularity, compress_method)
-        forecast(ts, method, application, error_metric, 0.2, True, True)
+        forecast(ts, method, application, error_metric, test_len, True, True)
     else:
-        error = total_error(method, metric, application, error_metric, granularity, compress_method)
+        error = total_error(method, metric, application, error_metric, granularity, compress_method, test_len)
         print(f'Total error: {error}')
 
 def total_error(forecasting_method, metric, application, error_metric, granularity, compress_method='mean',
-             test_len=0.2):
+                test_len=0.2):
     """
     Perform the forecasting method 'forecasting_method' on all the data of 'application', and
     metric 'metric' (traversing the data-directory). Resmaple the data to 'granularity', by compressing the data (resample) with method
@@ -56,8 +58,8 @@ def total_error(forecasting_method, metric, application, error_metric, granulari
     :rtype: (ts, error).
     """
     tot_err = 0.0
-    contents = pathlib.Path('../data/csv/seconds')
-    # contents = pathlib.Path('../test_dir (delete)')
+    # contents = pathlib.Path('../data/csv/seconds')
+    contents = pathlib.Path('../test_dir (delete)')     # Remove this, use previous line (for testing).
     for path1 in contents.iterdir():
         if leg(metric) not in str(path1):
             continue                             # Not the desired metric.

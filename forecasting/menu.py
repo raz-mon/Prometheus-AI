@@ -1,7 +1,7 @@
 from Methods import methods, error_metrics, metrics
 from data_gen.util import cpu_legal_pod_names, memory_legal_pod_names
 
-granularities = ['s', 'min', '10min', '30min', 'h', 'D', 'W', 'M', 'Y']          # [second, hour, week, month, year]
+granularities = ['s', 'min', '10min', '30min', 'h', 'D', 'W', 'M', 'Y']
 compress_methods = ['mean', 'max', 'min', 'last', 'first', 'median', 'sum']
 
 # from menu import metric_menu, application_menu, method_menu, gran_menu, cm_menu, error_metric_menu
@@ -61,6 +61,15 @@ def error_metric_menu():
         print(f'{ind}) {em}')
     choice = input('')
     return error_metrics_keys[int(choice)]
+
+
+def test_len_menu():
+    lens = ['0.1', '0.2', '0.3', '0.4']
+    print(f'Please choose test period:')
+    for ind, len_ in enumerate(lens):
+        print(f'{ind}) {len_}')
+    choice = input('')
+    return float(lens[int(choice)])
 
 
 def plot_one_menu():
