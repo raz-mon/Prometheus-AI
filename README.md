@@ -36,7 +36,7 @@ in order to run the menu-code from which you can choose the forecasting paramete
 
 There are many supplamentary methods you can run in order to manually control the data inserted, the forecasting method parameters etc.
 
-Some more execution options - TBD.
+Some more execution options - `TBD`.
 
 
 ## <ins>Useful links:</ins>
