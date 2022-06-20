@@ -1,4 +1,4 @@
-# Prometheus-AI
+# <ins>Prometheus-AI</ins>
 Applying classical and Deep-Learning algorithms to time-series data, collected through Prometheus (Thanos).
 
 ## Project goals
