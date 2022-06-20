@@ -36,8 +36,10 @@ in order to run the menu-code from which you can choose the forecasting paramete
 
 There are many supplamentary methods you can run in order to manually control the data inserted, the forecasting method parameters etc.
 
+Some more execution options - TBD.
+
 
 ## Useful links (one of the two):
-Can put some link here to some usefull links, or arrange all data in docs, and send to the relevant one (See other README..).
+TBD
 
  
