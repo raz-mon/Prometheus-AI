@@ -56,7 +56,7 @@ def visualize_ts(ts, ylabel, title):
 
 def white_noise(ts):
     """Generate some white noise"""
-    ## Create a wn time series with mean, std, length same as our loaded data
+    # Create a wn time series with mean, std, length same as our loaded data
     wn = np.random.normal(loc=ts.mean(), scale=ts.std(), size=len(ts))
     pd.DataFrame(wn).plot(figsize=(10, 5))
     plt.title("Visualize white noise")
@@ -66,8 +66,8 @@ def white_noise(ts):
 
 
 def random_walk(ts):
-    """Random walk, in the same length as ts"""
-    ## Randomly choose from -1, 0, 1 for the next step
+    """Random walk, in the same length as ts."""
+    # Randomly choose from -1, 0, 1 for the next step
     random_steps = np.random.choice(a=[-1, 0, 1], size=(len(ts), 1))
     rw = np.concatenate([np.zeros((1, 1)), random_steps]).cumsum(0)
     pd.DataFrame(rw).plot(figsize=(10, 5))
@@ -85,10 +85,11 @@ def Dickey_Fuller_test(ts):
         f"\n Test statistic {round(dft[0], 4)}",
         f"\n Critical values {dft[4]}",
     )
+    return dft
 
 
 def seasonality_additive(ts):
-    """Analyze seasonality of ts"""
+    """Analyze seasonality of ts."""
     plt.rc("figure", figsize=(15, 10))
     sd_add = seasonal_decompose(ts, model="additive", period=30)
     sd_add.plot()  # Image manipulation doesn't work here.
@@ -96,7 +97,7 @@ def seasonality_additive(ts):
 
 
 def seasonality_multiplicative(ts):
-    """Analyze seasonality of ts"""
+    """Analyze seasonality of ts."""
     plt.rc("figure", figsize=(15, 10))
     sd_add = seasonal_decompose(ts, model="multiplicative", period=30)
     sd_add.plot()  # Image manipulation doesn't work here.
@@ -104,9 +105,9 @@ def seasonality_multiplicative(ts):
 
 
 def AC(ts):
-    """Analyze the Auto-Correlation of ts"""
+    """Analyze the Auto-Correlation of ts."""
     sgt.plot_acf(ts, lags=50, zero=False)
-    ## We give zero=False since correlation of a time series with itself is always 1
+    # We give zero=False since correlation of a time series with itself is always 1
     plt.rc("figure", figsize=(15, 10))
     plt.ylabel("Coefficient of correlation")
     plt.xlabel("Lags")
@@ -130,10 +131,13 @@ def Linear_Regression_forecast(ts):
         ts.index, ts["values"].values
     )
 
-    # Intercept
-    # print("Intercept :", lr.intercept_)
-    # Coeffiecient of x : Slope
-    # print("Coefficient of x :", lr.coef_)
+    # Print results
+    """
+    Intercept
+    print("Intercept :", lr.intercept_)
+    Coeffiecient of x : Slope
+    print("Coefficient of x :", lr.coef_)
+    """
     return lr
     
 
@@ -146,8 +150,7 @@ def exponential_smoothing_forecast(ts):
     return ses_model_autofit
 
 def exp_smoothing_opt_alpha_forecast(ts):
-    """Forecasting algorithm using Exponential-Smoothing.
-    Finds the best alpha manually."""
+    """Forecasting algorithm using Exponential-Smoothing. Finds the best alpha manually."""
     ses_model = SimpleExpSmoothing(ts)
 
     # Try to optimize the coefficient by finding minimum AIC.
@@ -163,18 +166,14 @@ def exp_smoothing_opt_alpha_forecast(ts):
             min_aic_ses_model = ses_model_alpha
             min_aic_alpha_ses = i
 
-    # print("Best Alpha : ", min_aic_alpha_ses)
-    # print("Best Model : \n")
-    # min_aic_ses_model.summary()
+    """print("Best Alpha : ", min_aic_alpha_ses)
+    print("Best Model : \n")
+    min_aic_ses_model.summary()"""
     return ses_model_alpha
 
 
 def holt_forecast(ts):
     """Forecasting using the Holt algorithm."""
-    # since optimization is intensive, we are sampling for this method
-    # ts_holt = metric_df["value"].astype(float).resample("30min").mean()
-
-    # Try out autofit model and see what alpha and beta values are.
     des_model = Holt(ts["values"])
     des_model_autofit = des_model.fit(optimized=True, use_brute=True)
     print(des_model_autofit.summary())
@@ -203,10 +202,10 @@ def holt_opt_alpha_forecast(ts):
                 min_aic_alpha_des = i
                 min_aic_beta_des = j
 
-    # print("Best Alpha : ", min_aic_alpha_des)
-    # print("Best Beta : ", min_aic_beta_des)
-    # print("Best Model : \n")
-    # print(min_aic_des_model.summary())
+    """print("Best Alpha : ", min_aic_alpha_des)
+    print("Best Beta : ", min_aic_beta_des)
+    print("Best Model : \n")
+    print(min_aic_des_model.summary())"""
     return des_model_alpha_beta
 
 
@@ -350,23 +349,9 @@ def plot_predicts_aam(pred_train, pred, train, test, method, application):
    # for auto arima and fbprophet
     """
     train.plot(figsize=(15, 10), color="green", label="Train actual")
-
-    # pd.Series(pred_train, index=train[:start_date].index).plot(
-    #     figsize=(15, 10), color="red", label="Train prediction"
-    # )
-    pd.Series(pred_train, index=train.index).plot(
-        figsize=(15, 10), color="red", label="Train prediction"
-    )
-
+    pd.Series(pred_train, index=train.index).plot(figsize=(15, 10), color="red", label="Train prediction")
     test.plot(figsize=(15, 10), color="blue", label="Test actual")
-
-    # pd.Series(pred, index=test[start_date:].index).plot(
-    #     figsize=(15, 10), color="orange", label="Test prediction"
-    # )
-    pd.Series(pred, index=test.index).plot(
-        figsize=(15, 10), color="orange", label="Test prediction"
-    )
-
+    pd.Series(pred, index=test.index).plot(figsize=(15, 10), color="orange", label="Test prediction")
     plt.legend()
     if application is None:
         plt.title(f'method: {method}')
@@ -396,51 +381,32 @@ def plot_predicts_man(pred_train, pred_test, train, test, method, application):
 
 
 def fbprohet_forecast(test, train):
+    """Execute fb-prophet algorithm on test, train."""
     # Convert data to prophet type
-    train_fb = (
-        train.tz_localize(None)
-            .reset_index()
-            # .rename(columns={"timestamp": "ds", "values": "y"})
-            .rename(columns={"index": "ds", "values": "y"})
-    )
-    test_fb = (
-        test.tz_localize(None)
-            .reset_index()
-            # .rename(columns={"timestamp": "ds", "values": "y"})
-            .rename(columns={"index": "ds", "values": "y"})
-    )
-
-
+    train_fb = (train.tz_localize(None)
+                .reset_index()
+                # .rename(columns={"timestamp": "ds", "values": "y"})
+                .rename(columns={"index": "ds", "values": "y"}))
+    test_fb = (test.tz_localize(None)
+                .reset_index()
+                # .rename(columns={"timestamp": "ds", "values": "y"})
+                .rename(columns={"index": "ds", "values": "y"}))
     proph_model = Prophet()
     pm = proph_model.fit(train_fb)
-
     future = pd.concat([train_fb[["ds"]], test_fb[["ds"]]])
     forecast = proph_model.predict(future)
-    
     return forecast
 
 
 def auto_ARIMA_forecast(ts):
-    # Divide into train and test set
-    # train = ts[:int(len(ts) * 0.8)]
-    # test = ts[int(len(ts) * 0.8):]
-    #
-    # aam_default = auto_arima(train)
-    # pred_aam_default = aam_default.predict(n_periods=len(test))
-    # pred_train_aam_default = aam_default.predict(n_periods=len(train[:int(len(ts) * 0.8)]))
-
+    """Forecast using ARIMA, with automatic choice of parameters."""
     aam_default = auto_arima(ts)
     # print(aam_default.summary())
-    # print(f'MAE error: {mean_absolute_error(pred_train_aam_default, train)}')
-    # plot_predicts_aam(pred_train_aam_default, pred_aam_default, train, test)
     return aam_default
 
 
 def auto_ARIME_tuned_forecast(ts):
-    # Divide into train and test set
-    # train = ts[:int(len(ts) * 0.8)]
-    # test = ts[int(len(ts) * 0.8):]
-
+    """Forecast using auto-ARIMA, with a tuned model"""
     aam_tuned = auto_arima(
         ts,
         #            exogenous=,
@@ -458,23 +424,15 @@ def auto_ARIME_tuned_forecast(ts):
         information_criterion="aic",  # out of bag aic, aicc, bic, hqic
         # out_of_sample_size=int(len(ts) * 0.2),  ## Validation set of 20% for oob
     )
-
     # print(aam_tuned.summary())
-    # pred_aam_tuned = aam_tuned.predict(n_periods=len(test))
-    # pred_train_aam_tuned = aam_tuned.predict(n_periods=len(train))
-    # plot_predicts_aam(pred_train_aam_tuned, pred_aam_tuned, train, test)
-    # print(f'\n\n\nmae: {mean_absolute_error(pred, real)}')
     return aam_tuned
 
 
 def SARIMAX_3133134(ts):
+    """Forecast using SARIMAX, with parameters 3, 1, 3, 3, 1, 3, 4."""
     sarima_3133134 = SARIMAX(
         ts, order=(3, 1, 3), seasonal_order=(3, 1, 3, 4)
     ).fit()
-    # pred_sarima_3133134 = sarima_3133134.predict(start=start_date, end=end_date)
-    # pred_train_sarima_3133134 = sarima_3133134.predict(
-    #     start=first_date, end=start_date
-    # )
     # print(sarima_3133134.summary())
     return sarima_3133134
 
@@ -548,8 +506,6 @@ def forecast(ts, method: str, application=None, error_metric='mae', pred_len=0.2
         pre = forecaster(train)
         train_pred = pre.predict(start=train.index[0], end=train.index[-1], n_periods=len(train))
         test_pred = pre.predict(start=test.index[0], end=test.index[-1], n_periods=len(test))
-        # train_pred = pre.predict(n_periods=len(train))
-        # test_pred = pre.predict(n_periods=len(test))
         error_test = critereon(test, test_pred)
         error_train = critereon(train, train_pred)
         if plot:
@@ -563,8 +519,6 @@ def forecast(ts, method: str, application=None, error_metric='mae', pred_len=0.2
         pre = forecaster(train)
         train_pred = pre.predict(start=train.index[0], end=train.index[-1], n_periods=len(train))
         test_pred = pre.predict(start=test.index[0], end=test.index[-1], n_periods=len(test))
-        # train_pred = pre.predict(n_periods=len(train))
-        # test_pred = pre.predict(n_periods=len(test))
         error_test = critereon(test, test_pred)
         error_train = critereon(train, train_pred)
         if plot:
@@ -583,13 +537,15 @@ def forecast(ts, method: str, application=None, error_metric='mae', pred_len=0.2
         raise Exception(f'Method {method} is not implemented in this forecasting API yet')
 
 
-# df = pd.read_csv('../data/csv/seconds/pod_container_cpu_usage_sum_2022-05-06_09-18-36_28h/10.csv')
-# df = pd.read_pickle('../forecasting/ts-notebooks/ts.pkl')
-# print(df)
-# df['values'] = df['value']
-# print(df)
-# ts = get_ts(df)
-# forecast(ts, 'SARIMAX 3133134', plot=True, print_errors=True)
+"""Run forecast method:
+df = pd.read_csv('../data/csv/seconds/pod_container_cpu_usage_sum_2022-05-06_09-18-36_28h/10.csv')
+df = pd.read_pickle('../forecasting/ts-notebooks/ts.pkl')
+print(df)
+df['values'] = df['value']
+print(df)
+ts = get_ts(df)
+forecast(ts, 'SARIMAX 3133134', plot=True, print_errors=True)
+"""
 
 
 
