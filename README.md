@@ -1,8 +1,13 @@
 # Prometheus-AI
-Applying Deep-Learning algorithms to time-series data, using Prometheus (and Thanos) to collect the data.
+Applying classical and Deep-Learning algorithms to time-series data, collected through Prometheus (Thanos).
 
 ## Project goals
-Project goals (list or description).
+In this project, we wish to write an API that performs the following tasks:
+ * Poll data from Prometheuse constantly. On this data we will use our classical and Deep-Learning algorithms.
+ * Organize the data in an orderly fasion on the local computer running the queries (see file-paths before running).
+ * Offer the user to pick the following parameters when performing forecasting:
+   * Metric (cpu or memory in this case).
+   *
 
 ## Introduction
 Some introductory data, regarding the framework and technologies, and maybe some of the algorithms we will use (name-dropping at this stage.. Later will explain the methods in detail (in the docs or here at the main page)).
