@@ -6,3 +6,4 @@ pmdarima~=1.8.5
 statsmodels~=0.13.2
 scikit-learn~=0.24.2
 plotly~=5.7.0
+fbprophet~=0.7.1

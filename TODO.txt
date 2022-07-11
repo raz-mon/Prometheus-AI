@@ -1,18 +1,10 @@
 
 
 Todo:
-    - Query the two metrics EVERY DAY!
-    - Write function we talked about on the 7.6.2022 (total pipeline basically).
-      What's left:
-        - Change methods implementation in Methods.py so that each will return the error of the prediction period.
-            (Do this for as many functions as you can).
-        - No printing in the methods, take printing and plotting outside of the forecasting functions, so it can
-          be done at the will of the user.
-    - Write readme.md file in repository.
-    - Write documentation of the code (for all functions).
+    - Write readme.md file in repository (Cont.).
+    - Write documentation of the code (Cont.).
     - Write down all of the 'legal' application names in 'legal_pod_names' in util (for CPU and memory separetely).
     - Implement more forecasting methods (Add some DEEP ones).
-    - Add an option for querying prometheus 'live' and forecasting on the result?
     - Submit report (read once again to make sure it's good, no pressure Arnon said he'll change due-date to end of
       july.
 

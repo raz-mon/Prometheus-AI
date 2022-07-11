@@ -35,8 +35,12 @@ def method_menu():
     for ind, method in enumerate(methods.keys()):
         print(f'{ind}) {method}')
     choice = input('')
-    return list(methods.keys())[int(choice)]
-
+    keys_list = list(methods.keys())
+    if ' ' in choice:
+        choices = choice.split()                # Split by whitespaces.
+        return [keys_list[int(c)] for c in choices]
+    else:
+        return keys_list[int(choice)]
 
 def gran_menu():
     print(f'Please choose a granularity:')

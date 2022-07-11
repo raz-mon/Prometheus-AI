@@ -7,15 +7,16 @@ from Methods import analyze_ts, forecast, get_ts, methods, error_metrics, metric
 from data_gen.util import get_pod_name
 from menu import metric_menu, application_menu, method_menu, gran_menu, cm_menu, error_metric_menu, plot_one_menu, \
     test_len_menu
+from data_gen.util import cpu_legal_pod_names, memory_legal_pod_names
 from data_gen.Thanos_conn import leg
 import pandas as pd
 import pathlib
 
 def main():
-    # Print menu to user.
+    # Print menu to user, and get user-inputs.
     metric = metric_menu()
     application = application_menu(metric)
-    method = method_menu()
+    methods = method_menu()
     test_len = test_len_menu()
     granularity = gran_menu()
     compress_method = cm_menu()
@@ -24,9 +25,15 @@ def main():
 
     if (plot_one == 'Yes'):
         ts = find_ts(metric, application, granularity, compress_method)
-        forecast(ts, method, application, error_metric, test_len, True, True)
+        forecast(ts, methods, application, error_metric, test_len, True, True)
+    elif type(methods) == list:
+        errs = {}
+        for method in methods:
+            errs[method] = total_error(method, metric, application, error_metric, granularity, compress_method, test_len)
+        for method in errs:
+            print(f'Error for method {method}: {errs[method]}')
     else:
-        error = total_error(method, metric, application, error_metric, granularity, compress_method, test_len)
+        error = total_error(methods, metric, application, error_metric, granularity, compress_method, test_len)
         print(f'Total error: {error}')
 
 def total_error(forecasting_method, metric, application, error_metric, granularity, compress_method='mean',
@@ -142,11 +149,27 @@ def find_ts(metric, application, granularity, compress_method):
     return ts
 
 
-if __name__ == '__main__':
-    main()
+def tot_err_all_apps_for_metric(forecasting_method, metric, error_metric, granularity, compress_method='mean',
+                test_len=0.2):
+    """Print the error recieved for every application, for a specific metric, forecasting method, granularity,
+    compressing method, test-length and error metric."""
+    errs = {}
+    for application in cpu_legal_pod_names:
+        errs[application] = total_error(forecasting_method, metric, application, error_metric, granularity, compress_method, test_len)
+    for key in errs:
+        print(f'Error for application {key}: {errs[key]}')
+    return errs
 
 
-
+def compare_methods(metric, application, error_metric, granularity, compress_method='mean', test_len=0.2):
+    """Compare the errors received by different forecasting methods for a given metric, application, granularity,
+    compressing method, test-length and error metric"""
+    errs = {}
+    for method in methods:
+        errs[method] = total_error(method, metric, application, error_metric, granularity, compress_method, test_len)
+    for key in errs:
+        print(f'Error for method {key}: {errs[key]}')
+    return errs
 
 
 
