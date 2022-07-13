@@ -5,6 +5,18 @@ from Thanos_conn import ThanosConnect
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from prometheus_api_client.utils import parse_datetime
+from tqdm import tqdm
+from time import sleep
+
+d = {1: 4, 2: 5, 3: 6, 4: 7}
+for key, val in tqdm(d.items()):
+    print(f'{key}: {val}')
+    sleep(1)
+
+
+
+
+
 
 
 

@@ -11,6 +11,9 @@ from data_gen.util import cpu_legal_pod_names, memory_legal_pod_names
 from data_gen.Thanos_conn import leg
 import pandas as pd
 import pathlib
+import matplotlib.pyplot as plt
+from time import sleep
+from tqdm import tqdm
 
 def main():
     # Print menu to user, and get user-inputs.
@@ -67,7 +70,7 @@ def total_error(forecasting_method, metric, application, error_metric, granulari
     tot_err = 0.0
     # contents = pathlib.Path('../data/csv/seconds')
     contents = pathlib.Path('../test_dir (delete)')     # Remove this, use previous line (for testing).
-    for path1 in contents.iterdir():
+    for path1 in tqdm(contents.iterdir(), colour='blue', bar_format='{l_bar}{bar}{r_bar}'):
         if leg(metric) not in str(path1):
             continue                             # Not the desired metric.
         contents2 = pathlib.Path(path1)
@@ -95,6 +98,7 @@ def forecast_path(path, forecasting_method, error_metric, test_len, plot=False, 
     ts = get_ts(df)
     pred, err = forecast(ts, forecasting_method, error_metric, test_len, plot, print_err)
     return pred, err
+
 
 def resample_ts(ts, granularity, compress_method):
     if compress_method == 'mean':
@@ -156,8 +160,8 @@ def tot_err_all_apps_for_metric(forecasting_method, metric, error_metric, granul
     errs = {}
     for application in cpu_legal_pod_names:
         errs[application] = total_error(forecasting_method, metric, application, error_metric, granularity, compress_method, test_len)
-    for key in errs:
-        print(f'Error for application {key}: {errs[key]}')
+    for app, err in errs.items():
+        print(f'Error for application {app}: {err}')
     return errs
 
 
@@ -167,14 +171,21 @@ def compare_methods(metric, application, error_metric, granularity, compress_met
     errs = {}
     for method in methods:
         errs[method] = total_error(method, metric, application, error_metric, granularity, compress_method, test_len)
-    for key in errs:
-        print(f'Error for method {key}: {errs[key]}')
+    for method, err in errs.items():
+        print(f'Error for method {method}: {err}')
+    # Plot histogram of errors (bar for each method)
+    plt.style.use('ggplot')
+    plt.bar(list(errs.keys()), errs.values(), color='r', width=0.3)
+    plt.ylabel('error')
+    plt.title(f'Error per method')
+    plt.show()
     return errs
 
 
 
 
-
+if __name__ == '__main__':
+    main()
 
 
 
