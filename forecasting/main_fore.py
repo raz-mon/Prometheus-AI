@@ -28,16 +28,25 @@ def main():
 
     if (plot_one == 'Yes'):
         ts = find_ts(metric, application, granularity, compress_method)
-        forecast(ts, methods, application, error_metric, test_len, True, True)
-    elif type(methods) == list:
+        for method in methods:
+            forecast(ts, method, application, error_metric, test_len, True, True)
+    else:
         errs = {}
         for method in methods:
-            errs[method] = total_error(method, metric, application, error_metric, granularity, compress_method, test_len)
-        for method in errs:
-            print(f'Error for method {method}: {errs[method]}')
-    else:
-        error = total_error(methods, metric, application, error_metric, granularity, compress_method, test_len)
-        print(f'Total error: {error}')
+            errs[method] = total_error(method, metric, application, error_metric, granularity, compress_method,
+                                       test_len)
+        for method, err in errs.items():
+            print(f'Error for method {method}: {err}')
+
+    # elif type(methods) == list:
+    #     errs = {}
+    #     for method in methods:
+    #         errs[method] = total_error(method, metric, application, error_metric, granularity, compress_method, test_len)
+    #     for method, err in errs.items():
+    #         print(f'Error for method {method}: {err}')
+    # else:
+    #     error = total_error(methods, metric, application, error_metric, granularity, compress_method, test_len)
+    #     print(f'Total error: {error}')
 
 def total_error(forecasting_method, metric, application, error_metric, granularity, compress_method='mean',
                 test_len=0.2):

@@ -40,7 +40,7 @@ def method_menu():
         choices = choice.split()                # Split by whitespaces.
         return [keys_list[int(c)] for c in choices]
     else:
-        return keys_list[int(choice)]
+        return [keys_list[int(choice)]]
 
 def gran_menu():
     print(f'Please choose a granularity:')
