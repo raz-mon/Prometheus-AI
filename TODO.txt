@@ -1,8 +1,7 @@
 Todo:
     - Write readme.md file in repository (Cont.).
-    - Write documentation of the code (Cont.).
-    - Write down all of the 'legal' application names in 'legal_pod_names' in util (for CPU and memory separetely).
-    - Implement more forecasting methods (Add some DEEP ones).
+    - Write down all of the 'legal' application names in 'legal_pod_names' in util (for CPU and memory separetely - Cont.).
+    - Implement Deep learning forecasting methods.
 
 
 
