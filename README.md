@@ -29,7 +29,7 @@ In this project we wish to implement some of the classical methods, along with s
 From the root directory, run
 
 ```
-python forecasting/main.py
+python forecasting/main_fore.py
 ```
 
 in order to run the menu-code from which you can choose the forecasting parameters. Executing this module will also run the forecasting method chosen on the data chosen, and plot the result or aggregate the loss respectively to the choice of 'plot one?'.
