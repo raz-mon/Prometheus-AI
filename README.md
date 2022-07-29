@@ -36,7 +36,7 @@ in order to run the menu-code from which you can choose the forecasting paramete
 
 There are many supplamentary methods you can run in order to manually control the data inserted, the forecasting method parameters etc.
 
-Some more execution options - `TBD`.
+There are many options to execute more specific tasks, see `forecasting` package.
 
 
 ## <ins>Useful links:</ins>
