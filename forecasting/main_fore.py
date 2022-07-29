@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from time import sleep
 from tqdm import tqdm
 
+
 def main():
     # Print menu to user, and get user-inputs.
     metric = metric_menu()
