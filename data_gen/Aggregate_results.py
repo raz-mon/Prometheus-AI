@@ -4,6 +4,7 @@ from util import clean_and_date_df, get_pod_name, get_last_ts, get_first_ts, pod
     get_df, cpu_legal_pod_names, memory_legal_pod_names
 import os
 
+
 """Aggregation of results of the same applications, from the data polled from Prometheus"""
 
 # for app_name in util.legal_pod_names:
@@ -40,7 +41,6 @@ def aggregate_app(path, app_name, metric):
                     num_of_files += 1
                     agg_df = aggregate_results_df(agg_df, df1)
                     break
-    # Todo: Fill the missing data-points (mean of last or copy last value).
     file_name = f'../data/Resampled_hour_aggregated/{app_name}_{metric}_res-h_agg.csv'
     if not agg_df is None:
         agg_df.to_csv(file_name)        # Save to .csv file.
